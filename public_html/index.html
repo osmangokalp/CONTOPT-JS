@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="simulatedAnnealing.js"></script>
+    <script src="benchmarkFunctions.js"></script>
+    <script src="solution.js"></script>
+</head>
+<body>
+<div>TODO write content</div>
+<p id="p1"></p>
+<script>
+    w = new Worker("simulatedAnnealing.js");
+    w.postMessage([0.95, 100, 0.001, "sphere", -5.12, 5.12, 2]);
+
+    w.onmessage = function (event) {
+        document.getElementById("p1").innerHTML = event.data;
+    };
+
+</script>
+</body>
+</html>
