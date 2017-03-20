@@ -7,7 +7,7 @@ function SimulatedAnnealing() {
     this.alpha = null;
     this.temperature = null;
     this.epsilon = null;
-    this.func = null;
+    this.objFunc = null;
     this.upperBound = null;
     this.lowerBound = null;
     this.dimension = null;
@@ -23,14 +23,14 @@ SimulatedAnnealing.prototype.init = function (parameters) {
     console.log("temperature set to " + parameters.temperature + ", temperature: " + this.temperature);
     this.epsilon = parameters.epsilon;
     console.log("epsilon set to " + parameters.epsilon + ", epsilon: " + this.epsilon);
-    this.func = parameters.func;
+    this.objFunc = parameters.objFunc;
     this.upperBound = parameters.upperBound;
     console.log("upperBound set to " + parameters.upperBound + ", upperBound: " + this.upperBound);
     this.lowerBound = parameters.lowerBound;
     console.log("lowerBound set to " + parameters.lowerBound + ", lowerBound: " + this.lowerBound);
     this.dimension = parameters.dimension;
     console.log("dimension set to " + parameters.dimension + ", dimension: " + this.dimension);
-    this.currentSolution = createRandomSolution(this.lowerBound, this.upperBound, this.dimension, this.func);
+    this.currentSolution = createRandomSolution(this.lowerBound, this.upperBound, this.dimension, this.objFunc);
 };
 
 SimulatedAnnealing.prototype.solve = function () {
@@ -38,7 +38,7 @@ SimulatedAnnealing.prototype.solve = function () {
     while (this.temperature > this.epsilon) {
         var candidateSolution = this.createNeighbor();
         //console.log("current temperature: " + this.temperature);
-        var fCandidate = this.func(candidateSolution);
+        var fCandidate = this.objFunc(candidateSolution);
 
         var delta = fCandidate - this.currentSolution.fitness;
 
@@ -76,7 +76,7 @@ SimulatedAnnealing.prototype.createNeighbor = function () {
         neighborPos[selectedIndex] = this.upperBound;
     }
 
-    var neighborFitness = this.func(neighborPos);
+    var neighborFitness = this.objFunc(neighborPos);
     var neighbor = new Solution(neighborPos, neighborFitness);
 
     return neighbor;
@@ -96,7 +96,7 @@ onmessage = function (e) {
         "alpha": e.data[0],
         "temperature": e.data[1],
         "epsilon": e.data[2],
-        "func": func,
+        "objFunc": func,
         "upperBound": e.data[4],
         "lowerBound": e.data[5],
         "dimension": e.data[6]
