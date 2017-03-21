@@ -5,15 +5,23 @@ function Solution(position, fitness) {
     this.position = position;
     this.fitness = fitness;
 }
+;
 
-function createRandomSolution(lowerBound, upperBound, dimension, func) {
+function ESUncorrelatedSolution(position, fitness, sigma) {
+    Solution.call(this, position, fitness);
+    this.sigma = sigma;
+}
+;
+
+ESUncorrelatedSolution.prototype = Object.create(Solution.prototype);
+ESUncorrelatedSolution.prototype.constructor = ESUncorrelatedSolution;
+
+function createRandomPosition(lowerBound, upperBound, dimension) {
     var randomPos = [];
     var scale = upperBound - lowerBound;
     var i;
     for (i = 0; i < dimension; i++) {
-        randomPos[i] = (Math.random() - 0.5) * 2 * scale;
+        randomPos[i] = lowerBound + Math.random() * scale;
     }
-    var fitness = func(randomPos);
-    
-    return new Solution(randomPos, fitness);
+    return randomPos;
 }

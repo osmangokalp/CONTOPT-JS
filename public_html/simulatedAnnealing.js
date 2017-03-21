@@ -18,64 +18,58 @@ function SimulatedAnnealing() {
 
 SimulatedAnnealing.prototype.init = function (parameters) {
     this.alpha = parameters.alpha;
-    console.log("alpha set to " + parameters.alpha + ", alpha: " + this.alpha);
     this.temperature = parameters.temperature;
-    console.log("temperature set to " + parameters.temperature + ", temperature: " + this.temperature);
     this.epsilon = parameters.epsilon;
-    console.log("epsilon set to " + parameters.epsilon + ", epsilon: " + this.epsilon);
     this.objFunc = parameters.objFunc;
     this.upperBound = parameters.upperBound;
-    console.log("upperBound set to " + parameters.upperBound + ", upperBound: " + this.upperBound);
     this.lowerBound = parameters.lowerBound;
-    console.log("lowerBound set to " + parameters.lowerBound + ", lowerBound: " + this.lowerBound);
     this.dimension = parameters.dimension;
-    console.log("dimension set to " + parameters.dimension + ", dimension: " + this.dimension);
-    this.currentSolution = createRandomSolution(this.lowerBound, this.upperBound, this.dimension, this.objFunc);
+    var randomPos = createRandomPosition(this.lowerBound, this.upperBound, this.dimension);
+    this.currentSolution = new Solution(randomPos, this.objFunc(randomPos));
+    this.bestSolution = new Solution(randomPos, this.objFunc(randomPos));
 };
 
 SimulatedAnnealing.prototype.solve = function () {
-    console.log("in solve method");
     while (this.temperature > this.epsilon) {
+        postMessage("Best: " + this.bestSolution.position + " Fitness: " + this.bestSolution.fitness + ", Temp: " + this.temperature);
         var candidateSolution = this.createNeighbor();
-        //console.log("current temperature: " + this.temperature);
-        var fCandidate = this.objFunc(candidateSolution);
+        var fCandidate = candidateSolution.fitness;
 
         var delta = fCandidate - this.currentSolution.fitness;
 
         if (delta < 0) {
-            this.currentSolution = candidateSolution;
-            this.bestSolution = candidateSolution;
+            this.currentSolution = new Solution(candidateSolution.position.slice(0), candidateSolution.fitness);
+            if (this.currentSolution.fitness <= this.bestSolution.fitness) {
+                this.bestSolution = new Solution(this.currentSolution.position.slice(0), this.currentSolution.fitness);
+                //postMessage("Best: " + this.bestSolution.position + " Fitness: " + this.bestSolution.fitness);
+            }
         } else {
             var proba = Math.random();
-            
+
             if (proba < Math.exp(-delta / this.temperature)) {
-                this.currentSolution = candidateSolution;
+                this.currentSolution = new Solution(candidateSolution.position.slice(0), candidateSolution.fitness);
             }
         }
-        
+
         this.temperature *= this.alpha;
-        //console.log("Temp: " + this.temperature + " Current: " + this.currentSolution.position + " Fitness: " + this.currentSolution.fitness + " " + " Best: " + this.bestSolution.position + " Fitness: " + this.bestSolution.fitness);
     }
-    postMessage("Best: " + this.bestSolution.position + " Fitness: " + this.bestSolution.fitness);
 };
 
 SimulatedAnnealing.prototype.createNeighbor = function () {
     var neighborPos = this.currentSolution.position.slice(0);
-    var selectedIndex = Math.floor((Math.random() * this.dimension));
-    var scale = this.upperBound - this.lowerBound;
-    
-    var move = (Math.random() - 0.5) * scale;
-    console.log(move);
-    neighborPos[selectedIndex] += move;
-    
-    //console.log("currentpos: " + this.currentSolution.position + ", newpos: " + neighborPos);
+    var stepSize = 1;
+    var i;
 
-    if (neighborPos[selectedIndex] < this.lowerBound) {
-        neighborPos[selectedIndex] = this.lowerBound;
-    } else if (neighborPos[selectedIndex] > this.upperBound) {
-        neighborPos[selectedIndex] = this.upperBound;
+    for (i = 0; i < this.dimension; i++) {
+        var move = (Math.random() - 0.5) * stepSize;
+        neighborPos[i] += move;
+
+        if (neighborPos[i] < this.lowerBound) {
+            neighborPos[i] = this.lowerBound;
+        } else if (neighborPos[i] > this.upperBound) {
+            neighborPos[i] = this.upperBound;
+        }
     }
-
     var neighborFitness = this.objFunc(neighborPos);
     var neighbor = new Solution(neighborPos, neighborFitness);
 

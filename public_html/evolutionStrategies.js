@@ -2,10 +2,13 @@
 
 "use strict";
 
-importScripts('./benchmarkFunctions.js', './solution.js');
+importScripts('./benchmarkFunctions.js', './solution.js', './gaussianRNG.js');
 
+/**
+ * (1+lambda) strategy
+ * Uncorrelated mutation with one sigma
+ */
 function EvolutionStrategies() {
-    this.sigma = null;
     this.lambda = null;
     this.tau = null;
     this.maxNumOfFunctionEval = null;
@@ -13,13 +16,12 @@ function EvolutionStrategies() {
     this.upperBound = null;
     this.lowerBound = null;
     this.dimension = null;
+    this.rng = null;
     this.parent = null;
-    this.child = null;
 }
 ;
 
 EvolutionStrategies.prototype.init = function (parameters) {
-    this.sigma = parameters.sigma;
     this.lambda = parameters.lambda;
     this.tau = parameters.tau;
     this.maxNumOfFunctionEval = parameters.maxNumOfFunctionEval;
@@ -27,14 +29,50 @@ EvolutionStrategies.prototype.init = function (parameters) {
     this.upperBound = parameters.upperBound;
     this.lowerBound = parameters.lowerBound;
     this.dimension = parameters.dimension;
+    this.rng = new MarsagliaPolar();
+    var randomPos = createRandomPosition(this.lowerBound, this.upperBound, this.dimension);
+    this.parent = new ESUncorrelatedSolution(randomPos, this.objFunc(randomPos), parameters.sigma);
 };
 
 EvolutionStrategies.prototype.solve = function () {
-
+    var numOfFunctionEval = 0;
+    var i, neighbor;
+    var bestFitness = Number.MAX_VALUE, bestPosition = [], bestSigma;
+    
+    while (numOfFunctionEval + this.lambda <= this.maxNumOfFunctionEval) {
+        postMessage("Best: " + this.parent.position + " Fitness: " + this.parent.fitness);
+        for (i = 0; i < this.lambda; i++) {
+            neighbor = this.createNeighbor();
+            if(neighbor.fitness <= bestFitness) { //store the properties of the best child
+                bestFitness = neighbor.fitness;
+                bestPosition = neighbor.position.slice(0);
+                bestSigma = neighbor.sigma;
+            }
+        }
+        numOfFunctionEval += this.lambda;
+        
+        if (bestFitness <= this.parent.fitness) { //update the parent
+            this.parent = new ESUncorrelatedSolution(bestPosition, bestFitness, bestSigma);
+            //postMessage("Best: " + this.parent.position + " Fitness: " + this.parent.fitness);
+        }
+    }
+    
 };
 
 EvolutionStrategies.prototype.createNeighbor = function () {
-
+    var neighborPos, sigmaPrime, i;
+    var sigma = this.parent.sigma;
+    var step;
+    neighborPos = this.parent.position.slice(0);
+    sigmaPrime = sigma * Math.exp(this.tau * this.rng.generateRandom(0, 1));
+    for (i = 0; i < this.dimension; i++) { //mutate each dimension
+        do {
+            step = sigmaPrime * this.rng.generateRandom(0, 1);
+        } while (neighborPos[i] + step > this.upperBound || neighborPos[i] + step < this.lowerBound); //ensure that new pos is in the limits
+        neighborPos[i] += step;
+    }
+    
+    return new ESUncorrelatedSolution(neighborPos, this.objFunc(neighborPos), sigmaPrime);
 };
 
 onmessage = function (e) {
