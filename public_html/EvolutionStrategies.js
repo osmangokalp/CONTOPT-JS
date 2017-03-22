@@ -1,8 +1,7 @@
 
-
 "use strict";
 
-importScripts('./benchmarkFunctions.js', './solution.js', './gaussianRNG.js');
+importScripts('./BenchmarkFunctions.js', './Solution.js', './GaussianRNG.js');
 
 /**
  * (1+lambda) strategy
@@ -74,6 +73,14 @@ EvolutionStrategies.prototype.createNeighbor = function () {
     
     return new ESUncorrelatedSolution(neighborPos, this.objFunc(neighborPos), sigmaPrime);
 };
+
+function ESUncorrelatedSolution(position, fitness, sigma) {
+    Solution.call(this, position, fitness);
+    this.sigma = sigma;
+}
+;
+ESUncorrelatedSolution.prototype = Object.create(Solution.prototype);
+ESUncorrelatedSolution.prototype.constructor = ESUncorrelatedSolution;
 
 onmessage = function (e) {
     var func;

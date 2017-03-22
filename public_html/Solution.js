@@ -7,15 +7,6 @@ function Solution(position, fitness) {
 }
 ;
 
-function ESUncorrelatedSolution(position, fitness, sigma) {
-    Solution.call(this, position, fitness);
-    this.sigma = sigma;
-}
-;
-
-ESUncorrelatedSolution.prototype = Object.create(Solution.prototype);
-ESUncorrelatedSolution.prototype.constructor = ESUncorrelatedSolution;
-
 function createRandomPosition(lowerBound, upperBound, dimension) {
     var randomPos = [];
     var scale = upperBound - lowerBound;

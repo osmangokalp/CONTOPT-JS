@@ -5,21 +5,28 @@
     <title>TODO supply a title</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="simulatedAnnealing.js"></script>
-    <script src="benchmarkFunctions.js"></script>
-    <script src="solution.js"></script>
-    <script src="gaussianRNG.js"></script>
+    <script src="SimulatedAnnealing.js"></script>
+    <script src="EvolutionStrategies.js"></script>
+    <script src="ParticleSwarmOptimization.js"></script>
+    <script src="BenchmarkFunctions.js"></script>
+    <script src="Solution.js"></script>
+    <script src="GaussianRNG.js"></script>
 </head>
 <body>
 <p id="p1"></p>
 <p id="p2"></p>
+<p id="p3"></p>
 <script>
-    w1 = new Worker("simulatedAnnealing.js");
-    w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, 20]);
-
-    w2 = new Worker("evolutionStrategies.js");
     var dim = 2;
-    w2.postMessage([1, 10, 1 / Math.sqrt(dim), 5000*dim, "sphere", 5.12, -5.12, 20]);
+    
+    w1 = new Worker("SimulatedAnnealing.js");
+    w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, dim]);
+
+    w2 = new Worker("EvolutionStrategies.js");
+    w2.postMessage([1, 10, 1 / Math.sqrt(dim), 5000*dim, "sphere", 5.12, -5.12, dim]);
+
+    w3 = new Worker("ParticleSwarmOptimization.js");
+    w3.postMessage([0.39, 2.55, 1.33, 25, 5000*dim, "sphere", 5.12, -5.12, dim]);
 
     w1.onmessage = function (event) {
         document.getElementById("p1").innerHTML = event.data;
@@ -27,6 +34,10 @@
 
     w2.onmessage = function (event) {
         document.getElementById("p2").innerHTML = event.data;
+    };
+    
+    w3.onmessage = function (event) {
+        document.getElementById("p3").innerHTML = event.data;
     };
 
 </script>

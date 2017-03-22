@@ -1,7 +1,7 @@
 
 "use strict";
 
-importScripts('./benchmarkFunctions.js', './solution.js');
+importScripts('./BenchmarkFunctions.js', './Solution.js');
 
 function SimulatedAnnealing() {
     this.alpha = null;
@@ -31,7 +31,7 @@ SimulatedAnnealing.prototype.init = function (parameters) {
 
 SimulatedAnnealing.prototype.solve = function () {
     while (this.temperature > this.epsilon) {
-        postMessage("Best: " + this.bestSolution.position + " Fitness: " + this.bestSolution.fitness + ", Temp: " + this.temperature);
+        postMessage("Best: " + this.bestSolution.position + " Fitness: " + this.bestSolution.fitness);
         var candidateSolution = this.createNeighbor();
         var fCandidate = candidateSolution.fitness;
 
