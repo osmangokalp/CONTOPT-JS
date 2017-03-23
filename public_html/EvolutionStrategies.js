@@ -39,7 +39,6 @@ EvolutionStrategies.prototype.solve = function () {
     var bestFitness = Number.MAX_VALUE, bestPosition = [], bestSigma;
     
     while (numOfFunctionEval + this.lambda <= this.maxNumOfFunctionEval) {
-        postMessage("Best: " + this.parent.position + " Fitness: " + this.parent.fitness);
         for (i = 0; i < this.lambda; i++) {
             neighbor = this.createNeighbor();
             if(neighbor.fitness <= bestFitness) { //store the properties of the best child
@@ -52,7 +51,7 @@ EvolutionStrategies.prototype.solve = function () {
         
         if (bestFitness <= this.parent.fitness) { //update the parent
             this.parent = new ESUncorrelatedSolution(bestPosition, bestFitness, bestSigma);
-            //postMessage("Best: " + this.parent.position + " Fitness: " + this.parent.fitness);
+            postMessage("Best: " + this.parent.position + " Fitness: " + this.parent.fitness);
         }
     }
     

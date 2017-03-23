@@ -29,16 +29,6 @@ ParticleSwarmOptimization.prototype.init = function (parameters) {
     this.dimension = parameters.dimension;
     this.swarm = [];
 
-//    console.log("this.omega: " + this.omega);
-//    console.log("this.phi_p: " + this.phi_p);
-//    console.log("this.phi_g: " + this.phi_g);
-//    console.log("this.populationSize: " + this.populationSize);
-//    console.log("this.maxNumOfFunctionEval: " + this.maxNumOfFunctionEval);
-//    console.log("this.objFunc: " + this.objFunc);
-//    console.log("this.upperBound: " + this.upperBound);
-//    console.log("this.lowerBound: " + this.lowerBound);
-//    console.log("this.dimension: " + this.dimension);
-
     //create initial population
     var i, d, randomPos, randomVelocity = [], f_i;
     for (i = 0; i < this.swarmSize; i++) {

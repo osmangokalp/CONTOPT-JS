@@ -8,6 +8,7 @@
     <script src="SimulatedAnnealing.js"></script>
     <script src="EvolutionStrategies.js"></script>
     <script src="ParticleSwarmOptimization.js"></script>
+    <script src="ArtificialBeeColony.js"></script>
     <script src="BenchmarkFunctions.js"></script>
     <script src="Solution.js"></script>
     <script src="GaussianRNG.js"></script>
@@ -16,8 +17,9 @@
 <p id="p1"></p>
 <p id="p2"></p>
 <p id="p3"></p>
+<p id="p4"></p>
 <script>
-    var dim = 2;
+    var dim = 100;
     
     w1 = new Worker("SimulatedAnnealing.js");
     w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, dim]);
@@ -27,6 +29,9 @@
 
     w3 = new Worker("ParticleSwarmOptimization.js");
     w3.postMessage([0.39, 2.55, 1.33, 25, 5000*dim, "sphere", 5.12, -5.12, dim]);
+    
+    w4 = new Worker("ArtificialBeeColony.js");
+    w4.postMessage([20, 100, 5000*dim, "sphere", 5.12, -5.12, dim]);
 
     w1.onmessage = function (event) {
         document.getElementById("p1").innerHTML = event.data;
@@ -38,6 +43,10 @@
     
     w3.onmessage = function (event) {
         document.getElementById("p3").innerHTML = event.data;
+    };
+    
+    w4.onmessage = function (event) {
+        document.getElementById("p4").innerHTML = event.data;
     };
 
 </script>
