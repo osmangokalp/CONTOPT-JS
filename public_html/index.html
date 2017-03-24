@@ -12,42 +12,54 @@
     <script src="BenchmarkFunctions.js"></script>
     <script src="Solution.js"></script>
     <script src="GaussianRNG.js"></script>
+    <script src="SensorDeploymentProblem.js"></script>
+
+    
 </head>
-<body>
-<p id="p1"></p>
-<p id="p2"></p>
-<p id="p3"></p>
-<p id="p4"></p>
+<body onload="startSensorDeploymentProblem()">
+    <p id="p1"></p>
+    <p id="p2"></p>
+    <p id="p3"></p>
+    <p id="p4"></p>
+
 <script>
-    var dim = 100;
-    
-    w1 = new Worker("SimulatedAnnealing.js");
-    w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, dim]);
+    function startSensorDeploymentProblem() {
+        drawingArea.start();
+        drawingArea.addSensor( new Sensor(new Coordinate(50, 50), 10));
+        drawingArea.rePaint();
+    }
 
-    w2 = new Worker("EvolutionStrategies.js");
-    w2.postMessage([1, 10, 1 / Math.sqrt(dim), 5000*dim, "sphere", 5.12, -5.12, dim]);
 
-    w3 = new Worker("ParticleSwarmOptimization.js");
-    w3.postMessage([0.39, 2.55, 1.33, 25, 5000*dim, "sphere", 5.12, -5.12, dim]);
-    
-    w4 = new Worker("ArtificialBeeColony.js");
-    w4.postMessage([20, 100, 5000*dim, "sphere", 5.12, -5.12, dim]);
 
-    w1.onmessage = function (event) {
-        document.getElementById("p1").innerHTML = event.data;
-    };
-
-    w2.onmessage = function (event) {
-        document.getElementById("p2").innerHTML = event.data;
-    };
-    
-    w3.onmessage = function (event) {
-        document.getElementById("p3").innerHTML = event.data;
-    };
-    
-    w4.onmessage = function (event) {
-        document.getElementById("p4").innerHTML = event.data;
-    };
+    /*var dim = 100;
+     
+     w1 = new Worker("SimulatedAnnealing.js");
+     w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, dim]);
+     
+     w2 = new Worker("EvolutionStrategies.js");
+     w2.postMessage([1, 10, 1 / Math.sqrt(dim), 5000*dim, "sphere", 5.12, -5.12, dim]);
+     
+     w3 = new Worker("ParticleSwarmOptimization.js");
+     w3.postMessage([0.39, 2.55, 1.33, 25, 5000*dim, "sphere", 5.12, -5.12, dim]);
+     
+     w4 = new Worker("ArtificialBeeColony.js");
+     w4.postMessage([20, 100, 5000*dim, "sphere", 5.12, -5.12, dim]);
+     
+     w1.onmessage = function (event) {
+     document.getElementById("p1").innerHTML = event.data;
+     };
+     
+     w2.onmessage = function (event) {
+     document.getElementById("p2").innerHTML = event.data;
+     };
+     
+     w3.onmessage = function (event) {
+     document.getElementById("p3").innerHTML = event.data;
+     };
+     
+     w4.onmessage = function (event) {
+     document.getElementById("p4").innerHTML = event.data;
+     };*/
 
 </script>
 </body>
