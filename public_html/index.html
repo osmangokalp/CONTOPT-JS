@@ -25,7 +25,10 @@
 <script>
     function startSensorDeploymentProblem() {
         drawingArea.start();
-        drawingArea.addSensor( new Sensor(new Coordinate(50, 50), 10));
+        drawingArea.randomDeployment(100);
+        drawingArea.rePaint();
+        drawingArea.rePaint();
+        drawingArea.rePaint();
         drawingArea.rePaint();
     }
 

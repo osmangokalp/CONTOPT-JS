@@ -4,12 +4,13 @@ var sensors = [];
 var points = [];
 var numOfSensors = 0;
 var numOfPoints = 0;
+var sensorRadius = 35;
 
 var drawingArea = {
     canvas: document.createElement("canvas"),
     start: function () {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
+        this.canvas.width = 500;
+        this.canvas.height = 500;
         this.canvas.style = "border:1px solid #c3c3c3;background-color: #f1f1f1;";
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
@@ -18,16 +19,26 @@ var drawingArea = {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     },
     rePaint: function () {
+        this.clear();
         var i;
         for (i = 0; i < numOfSensors; i++) {
             sensors[i].draw();
         }
     },
-    addSensor: function(sensor){
+    addSensor: function (sensor) {
         sensors[numOfSensors++] = sensor;
     },
-    addPoint: function(point){
+    addPoint: function (point) {
         points[numOfPoints++] = point;
+    },
+    randomDeployment(num) {
+        var i;
+        for (i = 0; i < num; i++) {
+            var posX = Math.random() * this.canvas.width;
+            var posY = Math.random() * this.canvas.height;
+            var sensor = new Sensor(new Coordinate(posX, posY), sensorRadius);
+            this.addSensor(sensor);
+        }
     }
 };
 
@@ -39,8 +50,10 @@ function Sensor(coordinate, radius) {
         var ctx = drawingArea.context;
         ctx.beginPath();
         ctx.arc(this.coordinate.posX, this.coordinate.posY, this.radius, 0, 2 * Math.PI);
-        ctx.stroke();
-                console.log(this.coordinate);
+        ctx.fillStyle = 'rgba(0, 0, 255, 0.3)';
+        ctx.fill();
+        //ctx.stroke();
+        console.log(this.coordinate);
 
     };
 }
