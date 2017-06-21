@@ -9,6 +9,7 @@
     <script src="EvolutionStrategies.js"></script>
     <script src="ParticleSwarmOptimization.js"></script>
     <script src="ArtificialBeeColony.js"></script>
+    <script src="DifferentialEvolution.js"></script>
     <script src="BenchmarkFunctions.js"></script>
     <script src="Solution.js"></script>
     <script src="GaussianRNG.js"></script>
@@ -22,6 +23,7 @@
     <p id="p2"></p>
     <p id="p3"></p>
     <p id="p4"></p>
+    <p id="p5"></p>
 
 <script>
     /*function startSensorDeploymentProblem() {
@@ -37,7 +39,7 @@
 
     var dim = 50;
 
-    w1 = new Worker("SimulatedAnnealing.js");
+    /*w1 = new Worker("SimulatedAnnealing.js");
     w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, dim]);
 
     w1.onmessage = function (event) {
@@ -63,6 +65,13 @@
 
     w4.onmessage = function (event) {
         document.getElementById("p4").innerHTML = event.data;
+    };*/
+    
+    w5 = new Worker("DifferentialEvolution.js");
+    w5.postMessage([20, 0.9, 0.5, 5000 * dim, "sphere", 5.12, -5.12, dim]);
+
+    w5.onmessage = function (event) {
+        document.getElementById("p5").innerHTML = event.data;
     };
 
 </script>
