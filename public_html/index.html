@@ -31,7 +31,27 @@
         drawingArea.rePaint();
     }
 
-
+    function createRandomSensorProblem() {
+        var numOfSensors = 100;
+        var numOfPoints = 100;
+        var width = 500;
+        var height = 500;
+        var radius = 35;
+        var i;
+        
+        var sensors = [];
+        for (i = 0; i < numOfSensors; i++) {
+            var posX = Math.random() * width;
+            var posY = Math.random() * height;
+            var sensor = new Sensor(new Coordinate(posX, posY), radius);
+            sensors[i] = sensor;
+        }
+        
+        var points = [];
+        for (i = 0; i < numOfPoints; i++) {
+            
+        }
+    }
 
     var dim = 100;
 
