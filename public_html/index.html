@@ -17,8 +17,7 @@
 
 
 </head>
-<body>
-<!--<body onload="startSensorDeploymentProblem()"><-->
+<body onload="startSensorDeploymentProblem()">
     <p id="p1"></p>
     <p id="p2"></p>
     <p id="p3"></p>
@@ -26,14 +25,11 @@
     <p id="p5"></p>
 
 <script>
-    /*function startSensorDeploymentProblem() {
+    function startSensorDeploymentProblem() {
         drawingArea.start();
         drawingArea.randomDeployment(100);
         drawingArea.rePaint();
-        drawingArea.rePaint();
-        drawingArea.rePaint();
-        drawingArea.rePaint();
-    }*/
+    }
 
 
 
@@ -65,14 +61,14 @@
 
     w4.onmessage = function (event) {
         document.getElementById("p4").innerHTML = event.data;
-    };*/
+    };
     
     w5 = new Worker("DifferentialEvolution.js");
     w5.postMessage([20, 0.9, 0.8, 5000 * dim, "sphere", 5.12, -5.12, dim]);
 
     w5.onmessage = function (event) {
         document.getElementById("p5").innerHTML = event.data;
-    };
+    };*/
 
 </script>
 </body>

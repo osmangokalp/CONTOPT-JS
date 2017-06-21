@@ -31,7 +31,7 @@ var drawingArea = {
     addPoint: function (point) {
         points[numOfPoints++] = point;
     },
-    randomDeployment(num) {
+    randomDeployment: function(num) {
         var i;
         for (i = 0; i < num; i++) {
             var posX = Math.random() * this.canvas.width;
@@ -52,9 +52,6 @@ function Sensor(coordinate, radius) {
         ctx.arc(this.coordinate.posX, this.coordinate.posY, this.radius, 0, 2 * Math.PI);
         ctx.fillStyle = 'rgba(0, 0, 255, 0.3)';
         ctx.fill();
-        //ctx.stroke();
-        console.log(this.coordinate);
-
     };
 }
 

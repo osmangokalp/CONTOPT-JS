@@ -98,7 +98,6 @@ DiferentialEvolution.prototype.solve = function () {
                     this.globalBest.solution = y.slice(0);
                     this.globalBest.fitness = fy;
                     postMessage("Best: " + this.globalBest.position + " Fitness: " + this.globalBest.fitness);
-                    console.log("Best: " + this.globalBest.fitness);
                 }
             }
         }
