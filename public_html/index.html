@@ -37,7 +37,7 @@
 
 
 
-    var dim = 50;
+    var dim = 100;
 
     /*w1 = new Worker("SimulatedAnnealing.js");
     w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, dim]);
@@ -68,7 +68,7 @@
     };*/
     
     w5 = new Worker("DifferentialEvolution.js");
-    w5.postMessage([20, 0.9, 0.5, 5000 * dim, "sphere", 5.12, -5.12, dim]);
+    w5.postMessage([20, 0.9, 0.8, 5000 * dim, "sphere", 5.12, -5.12, dim]);
 
     w5.onmessage = function (event) {
         document.getElementById("p5").innerHTML = event.data;
