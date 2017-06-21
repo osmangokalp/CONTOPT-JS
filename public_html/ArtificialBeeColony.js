@@ -78,24 +78,34 @@ ArtificialBeeColony.prototype.solve = function () {
                 this.trial[i] = 0; //rest trial number
                 this.foods[i].position = newPos.slice(0);
                 this.foods[i].fitness = newF;
-
-                if (newF <= this.globalBest.fitness) { //update if new global best found
-                    this.globalBest.position = newPos.slice(0);
-                    this.globalBest.fitness = newF;
-                    postMessage("Best: " + this.globalBest.position + " Fitness: " + this.globalBest.fitness);
-                }
             } else {
                 this.trial[i]++; //increase the trial number of ith food source
             }
         }
 
         //calculate probabilities
-        var totalFitness = 0, prob = [];
+        var transformedFitness = [];
         for (i = 0; i < this.foodNumber; i++) {
-            totalFitness += this.foods[i].fitness;
+            console.log("this.foods[i].fitness[" + i + "]: " + this.foods[i].fitness);
+            if (this.foods[i].fitness >= 0) {
+                transformedFitness[i] = 1 / (this.foods[i].fitness + 1);
+            } else {
+                transformedFitness[i] = 1 + Math.abs(this.foods[i].fitness);
+            }
         }
-        for (i = 0; i < this.foodNumber; i++) {
-            prob[i] = this.foods[i].fitness / totalFitness; //normalized probabilities;
+
+        var maxfit = transformedFitness[0];
+        for (i = 1; i < this.foodNumber; i++)
+        {
+            if (transformedFitness[i] > maxfit) {
+                maxfit = transformedFitness[i];
+            }
+        }
+
+        var prob = [];
+        for (i = 0; i < this.foodNumber; i++)
+        {
+            prob[i] = (0.9 * (transformedFitness[i] / maxfit)) + 0.1;
         }
 
         //send onlooker bees
@@ -130,12 +140,6 @@ ArtificialBeeColony.prototype.solve = function () {
                     this.trial[i] = 0; //rest trial number
                     this.foods[i].position = newPos.slice(0);
                     this.foods[i].fitness = newF;
-
-                    if (newF <= this.globalBest.fitness) { //update if new global best found
-                        this.globalBest.position = newPos.slice(0);
-                        this.globalBest.fitness = newF;
-                        postMessage("Best: " + this.globalBest.position + " Fitness: " + this.globalBest.fitness);
-                    }
                 } else {
                     this.trial[i]++; //increase the trial number of ith food source
                 }
@@ -144,6 +148,21 @@ ArtificialBeeColony.prototype.solve = function () {
             if (i === this.foodNumber) {
                 i = 0;
             }
+        }
+
+        //Memorize best
+        min = this.foods[0].fitness;
+        minIndex = 0;
+        for (i = 1; i < this.foodNumber; i++) {
+            if (this.foods[i].fitness < min) {
+                min = this.foods[i].fitness;
+                minIndex = i;
+            }
+        }
+        if (min < this.globalBest.fitness) {
+            this.globalBest.position = this.foods[minIndex].position.slice(0);
+            this.globalBest.fitness = min;
+            postMessage("Best: " + this.globalBest.position + " Fitness: " + this.globalBest.fitness);
         }
 
         //send scout bees
