@@ -2,22 +2,7 @@
 
 importScripts('./BenchmarkFunctions.js', './Solution.js');
 
-function ParticleSwarmOptimization() {
-    this.omega = null;
-    this.phi_p = null;
-    this.phi_g = null;
-    this.swarmSize = null;
-    this.maxNumOfFunctionEval = null;
-    this.objFunc = null;
-    this.upperBound = null;
-    this.lowerBound = null;
-    this.dimension = null;
-    this.swarm = null;
-    this.globalBest = null;
-}
-;
-
-ParticleSwarmOptimization.prototype.init = function (parameters) {
+function ParticleSwarmOptimization(parameters) {
     this.omega = parameters.omega;
     this.phi_p = parameters.phi_p;
     this.phi_g = parameters.phi_g;
@@ -28,7 +13,12 @@ ParticleSwarmOptimization.prototype.init = function (parameters) {
     this.lowerBound = parameters.lowerBound;
     this.dimension = parameters.dimension;
     this.swarm = [];
+    
+    this.globalBest = null;
+}
+;
 
+ParticleSwarmOptimization.prototype.createInitialPopulation = function () {
     //create initial population
     var i, d, randomPos, randomVelocity = [], f_i;
     for (i = 0; i < this.swarmSize; i++) {
@@ -37,7 +27,7 @@ ParticleSwarmOptimization.prototype.init = function (parameters) {
             randomVelocity[d] = Math.random() * (this.upperBound - this.lowerBound);
             randomVelocity[d] *= Math.random() > 0.5 ? -1 : 1; //U(-|bup-blo|, |bup-blo|)
         }
-        f_i = this.objFunc(randomPos);
+        f_i = this.calculateObjValue(randomPos);
         this.swarm[i] = new Particle(randomPos, f_i, randomVelocity.slice(0));
 
         //update globalBest if there is better fitness
@@ -48,8 +38,14 @@ ParticleSwarmOptimization.prototype.init = function (parameters) {
 
 };
 
+ParticleSwarmOptimization.prototype.calculateObjValue = function (array) {
+    return this.objFunc(array);
+};
+
 ParticleSwarmOptimization.prototype.solve = function () {
     var numOfFunctionEval = 0, i, d, r_p, r_g, particle;
+
+    this.createInitialPopulation();
 
     while (numOfFunctionEval + this.swarmSize <= this.maxNumOfFunctionEval) {
         for (i = 0; i < this.swarmSize; i++) {
@@ -68,8 +64,11 @@ ParticleSwarmOptimization.prototype.solve = function () {
             for (d = 0; d < this.dimension; d++) {
                 particle.position[d] += particle.velocity[d];
             }
+            
+            particle.position = this.fixBoundary(particle.position);
+            
             //update the particle's fitness
-            particle.fitness = this.objFunc(particle.position);
+            particle.fitness = this.calculateObjValue(particle.position);
             
             if (particle.fitness < particle.bestFitness) {
                 //update the particle's best known position
@@ -80,12 +79,24 @@ ParticleSwarmOptimization.prototype.solve = function () {
                     //update the swarm's best known position
                     this.globalBest.position = particle.bestPosition.slice(0);
                     this.globalBest.fitness = particle.bestFitness;
-                    postMessage("Best: " + this.globalBest.position + " Fitness: " + this.globalBest.fitness);
+                    postMessage([this.globalBest.position, this.globalBest.fitness]);
                 }
             }
         }
         numOfFunctionEval += this.swarmSize;
     }
+};
+
+ParticleSwarmOptimization.prototype.fixBoundary = function (array) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] > this.upperBound) {
+            array[i] = this.upperBound;
+        } else if (array[i] < this.lowerBound) {
+            array[i] = this.lowerBound;
+        }
+    }
+    
+    return array;
 };
 
 onmessage = function (e) {
@@ -110,8 +121,7 @@ onmessage = function (e) {
         "dimension": e.data[8]
     };
 
-    var pso = new ParticleSwarmOptimization();
-    pso.init(parameters);
+    var pso = new ParticleSwarmOptimization(parameters);
     pso.solve();
 };
 
