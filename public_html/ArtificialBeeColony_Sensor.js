@@ -41,6 +41,24 @@ ArtificialBeeColony_Sensor.prototype.createInitialPopulation = function () {
     this.globalBest = new Solution(this.foods[minIndex].position.slice(0), min);
 };
 
+ArtificialBeeColony_Sensor.prototype.fixBoundary = function (array) {
+    for (var i = 0; i < this.sensorDeploymentProblem.getNumOfSensors(); i++) {
+        if (array[2 * i] > this.sensorDeploymentProblem.getAreaWidth()) {
+            array[2 * i] = this.sensorDeploymentProblem.getAreaWidth();
+        } else if (array[2 * i] < 0) {
+            array[2 * i] = 0;
+        }
+
+        if (array[2 * i + 1] > this.sensorDeploymentProblem.getAreaHeight()) {
+            array[2 * i + 1] = this.sensorDeploymentProblem.getAreaHeight();
+        } else if (array[2 * i + 1] < 0) {
+            array[2 * i + 1] = 0;
+        }
+    }
+
+    return array;
+};
+
 onmessage = function (e) {
 
 

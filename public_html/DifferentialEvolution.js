@@ -52,8 +52,6 @@ DifferentialEvolution.prototype.solve = function () {
 
             x = this.solutions[i].position; // current solution
             
-            console.log("rA: " + rA + ", rB: " + rB + ", rC: " + rC + ", i: " + i);
-            
             y = x.slice(0);
             for (var j = 0; j < this.dimension; j++) {
                 rI = Math.random();
@@ -72,9 +70,9 @@ DifferentialEvolution.prototype.solve = function () {
                 this.solutions[i].fitness = fy;
                
                 if (fy < this.globalBest.fitness) {
-                    this.globalBest.solution = y.slice(0);
+                    this.globalBest.position = y.slice(0);
                     this.globalBest.fitness = fy;
-                    postMessage("Best: " + this.globalBest.position + " Fitness: " + this.globalBest.fitness);
+                    postMessage([this.globalBest.position, this.globalBest.fitness]);
                 }
             }
         }

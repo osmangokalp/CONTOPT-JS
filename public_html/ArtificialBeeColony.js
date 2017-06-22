@@ -41,12 +41,8 @@ ArtificialBeeColony.prototype.solve = function () {
             newPos = curPos.slice(0);
             newPos[param2change] = curPos[param2change] + (curPos[param2change] - neighborPos[param2change]) * (Math.random() - 0.5) * 2;
 
-            if (newPos[param2change] < this.lowerBound) { //ensure that new position is within limits 
-                newPos[param2change] = this.lowerBound;
-            } else if (newPos[param2change] > this.upperBound) {
-                newPos[param2change] = this.upperBound;
-            }
-
+            newPos = this.fixBoundary(newPos);
+            
             newF = this.calculateObjValue(newPos);
 
             if (newF <= this.foods[i].fitness) { //if the mutant solution is better than the original
@@ -102,11 +98,7 @@ ArtificialBeeColony.prototype.solve = function () {
                 newPos = curPos.slice(0);
                 newPos[param2change] = curPos[param2change] + (curPos[param2change] - neighborPos[param2change]) * (Math.random() - 0.5) * 2;
 
-                if (newPos[param2change] < this.lowerBound) { //ensure that new position is within limits 
-                    newPos[param2change] = this.lowerBound;
-                } else if (newPos[param2change] > this.upperBound) {
-                    newPos[param2change] = this.upperBound;
-                }
+                newPos = this.fixBoundary(newPos);
 
                 newF = this.calculateObjValue(newPos);
 
@@ -136,7 +128,6 @@ ArtificialBeeColony.prototype.solve = function () {
         if (min < this.globalBest.fitness) {
             this.globalBest.position = this.foods[minIndex].position.slice(0);
             this.globalBest.fitness = min;
-            //postMessage("Best: " + this.globalBest.position + " Fitness: " + this.globalBest.fitness);
             postMessage([this.globalBest.position, this.globalBest.fitness]);
         }
 
@@ -188,6 +179,18 @@ ArtificialBeeColony.prototype.createInitialPopulation = function () {
         }
     }
     this.globalBest = new Solution(this.foods[minIndex].position.slice(0), min);
+};
+
+ArtificialBeeColony.prototype.fixBoundary = function (array) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] > this.upperBound) {
+            array[i] = this.upperBound;
+        } else if (array[i] < this.lowerBound) {
+            array[i] = this.lowerBound;
+        }
+    }
+    
+    return array;
 };
 
 onmessage = function (e) {
