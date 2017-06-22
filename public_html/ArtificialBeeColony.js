@@ -6,23 +6,8 @@ importScripts('./BenchmarkFunctions.js', './Solution.js');
  * Basic ABC algorithm.
  * Adapted from java code at http://mf.erciyes.edu.tr/abc/form.aspx
  */
-function ArtificialBeeColony() {
-    this.NP = null; //the number of colony size (employed bees+onlooker bees)
-    this.foodNumber = null; //The number of foods
-    this.limit = null;
-    this.maxNumOfFunctionEval = null;
-    this.objFunc = null;
-    this.upperBound = null;
-    this.lowerBound = null;
-    this.dimension = null;
-    this.foods = null;
-    this.trial = null;
-    this.globalBest = null;
-}
-;
-
-ArtificialBeeColony.prototype.init = function (parameters) {
-    this.NP = parameters.NP;
+function ArtificialBeeColony(parameters) {
+    this.NP = parameters.NP; //the number of colony size (employed bees+onlooker bees)
     this.limit = parameters.limit;
     this.maxNumOfFunctionEval = parameters.maxNumOfFunctionEval;
     this.objFunc = parameters.objFunc;
@@ -32,26 +17,16 @@ ArtificialBeeColony.prototype.init = function (parameters) {
     this.foodNumber = this.NP / 2;
     this.foods = [];
     this.trial = [];
-};
+    this.globalBest = null;
+}
+;
 
 ArtificialBeeColony.prototype.solve = function () {
     var numOfFunctionEval = 0;
     var i, j, t, min = Number.MAX_VALUE, minIndex = 0;
     var param2change, neighborIndex, neighborPos, newPos, curPos, newF;
 
-    //initialization step
-    for (i = 0; i < this.foodNumber; i++) {
-        var randPos = createRandomPosition(this.lowerBound, this.upperBound, this.dimension);
-        var randF = this.objFunc(randPos);
-        this.foods[i] = new Solution(randPos, randF); //create random solution
-        this.trial[i] = 0; //init the trial number
-
-        if (randF < min) {
-            min = randF;
-            minIndex = i;
-        }
-    }
-    this.globalBest = new Solution(this.foods[minIndex].position.slice(0), min);
+    this.createInitialPopulation();
 
     while (numOfFunctionEval + this.NP <= this.maxNumOfFunctionEval) {
         //send employee bees
@@ -72,7 +47,7 @@ ArtificialBeeColony.prototype.solve = function () {
                 newPos[param2change] = this.upperBound;
             }
 
-            newF = this.objFunc(newPos);
+            newF = this.calculateObjValue(newPos);
 
             if (newF <= this.foods[i].fitness) { //if the mutant solution is better than the original
                 this.trial[i] = 0; //rest trial number
@@ -86,7 +61,6 @@ ArtificialBeeColony.prototype.solve = function () {
         //calculate probabilities
         var transformedFitness = [];
         for (i = 0; i < this.foodNumber; i++) {
-            console.log("this.foods[i].fitness[" + i + "]: " + this.foods[i].fitness);
             if (this.foods[i].fitness >= 0) {
                 transformedFitness[i] = 1 / (this.foods[i].fitness + 1);
             } else {
@@ -134,7 +108,7 @@ ArtificialBeeColony.prototype.solve = function () {
                     newPos[param2change] = this.upperBound;
                 }
 
-                newF = this.objFunc(newPos);
+                newF = this.calculateObjValue(newPos);
 
                 if (newF <= this.foods[i].fitness) { //if the mutant solution is better than the original
                     this.trial[i] = 0; //rest trial number
@@ -162,8 +136,11 @@ ArtificialBeeColony.prototype.solve = function () {
         if (min < this.globalBest.fitness) {
             this.globalBest.position = this.foods[minIndex].position.slice(0);
             this.globalBest.fitness = min;
-            postMessage("Best: " + this.globalBest.position + " Fitness: " + this.globalBest.fitness);
+            //postMessage("Best: " + this.globalBest.position + " Fitness: " + this.globalBest.fitness);
+            postMessage([this.globalBest.position, this.globalBest.fitness]);
         }
+
+        numOfFunctionEval += this.NP;
 
         //send scout bees
         var maxtrialindex = 0;
@@ -175,14 +152,42 @@ ArtificialBeeColony.prototype.solve = function () {
 
         if (this.trial[maxtrialindex] >= this.limit)
         {
-            var randPos = createRandomPosition(this.lowerBound, this.upperBound, this.dimension);
-            var randF = this.objFunc(randPos);
+            var randPos = this.createRandomSolution(this.lowerBound, this.upperBound, this.dimension);
+            var randF = this.calculateObjValue(randPos);
+            numOfFunctionEval++;
+            if (numOfFunctionEval >= this.maxNumOfFunctionEval) {
+                break;
+            }
             this.foods[maxtrialindex] = new Solution(randPos, randF); //create random solution
             this.trial[maxtrialindex] = 0; //init the trial number
         }
-
-        numOfFunctionEval += this.NP;
     }
+};
+
+ArtificialBeeColony.prototype.calculateObjValue = function (array) {
+    return this.objFunc(array);
+};
+
+ArtificialBeeColony.prototype.createRandomSolution = function () {
+    var randPos = createRandomPosition(this.lowerBound, this.upperBound, this.dimension);
+    return randPos;
+};
+
+ArtificialBeeColony.prototype.createInitialPopulation = function () {
+    var i, min = Number.MAX_VALUE, minIndex = 0;
+    //initialization step
+    for (i = 0; i < this.foodNumber; i++) {
+        var randPos = createRandomPosition(this.lowerBound, this.upperBound, this.dimension);
+        var randF = this.calculateObjValue(randPos);
+        this.foods[i] = new Solution(randPos, randF); //create random solution
+        this.trial[i] = 0; //init the trial number
+
+        if (randF < min) {
+            min = randF;
+            minIndex = i;
+        }
+    }
+    this.globalBest = new Solution(this.foods[minIndex].position.slice(0), min);
 };
 
 onmessage = function (e) {
@@ -205,7 +210,6 @@ onmessage = function (e) {
         "dimension": e.data[6]
     };
 
-    var abc = new ArtificialBeeColony();
-    abc.init(parameters);
+    var abc = new ArtificialBeeColony(parameters);
     abc.solve();
 };

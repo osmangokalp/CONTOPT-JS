@@ -14,10 +14,12 @@
     <script src="Solution.js"></script>
     <script src="GaussianRNG.js"></script>
     <script src="SensorDeploymentProblem.js"></script>
+    <script src="SensorPanel.js"></script>
 
+    <script src="ArtificialBeeColony_Sensor.js"></script>
 
 </head>
-<body onload="startSensorDeploymentProblem()">
+<body onload="startSensorProblem()">
     <p id="p1"></p>
     <p id="p2"></p>
     <p id="p3"></p>
@@ -25,70 +27,72 @@
     <p id="p5"></p>
 
 <script>
-    function startSensorDeploymentProblem() {
-        drawingArea.start();
-        drawingArea.randomDeployment(100);
-        drawingArea.rePaint();
-    }
-
-    function createRandomSensorProblem() {
+    function startSensorProblem() {
         var numOfSensors = 100;
-        var numOfPoints = 100;
+        var numOfPoints = 1000;
         var width = 500;
         var height = 500;
         var radius = 35;
-        var i;
+
+        var prob = new SensorDeploymentProblem(numOfSensors, numOfPoints, radius, width, height);
+        var randomSensorsArray = prob.generateRandomSensorsArray();
+        var randomPointsArray = prob.generateRandomPointsArray();
+        prob.setSensorsArray(randomSensorsArray);
+        prob.setPointsArray(randomPointsArray);
+
+        var sPanel = new SensorPanel(prob);
+        sPanel.start();
         
-        var sensors = [];
-        for (i = 0; i < numOfSensors; i++) {
-            var posX = Math.random() * width;
-            var posY = Math.random() * height;
-            var sensor = new Sensor(new Coordinate(posX, posY), radius);
-            sensors[i] = sensor;
-        }
-        
-        var points = [];
-        for (i = 0; i < numOfPoints; i++) {
-            
-        }
+        var dim = numOfSensors * 2;
+        document.getElementById("p1").innerHTML = prob.getCoverage();
+        w6 = new Worker("ArtificialBeeColony_Sensor.js");
+        w6.postMessage([20, 100, 10000, 0, 0, dim, numOfSensors, numOfPoints, radius, width, height, randomPointsArray]);
+
+        w6.onmessage = function (event) {
+            prob.setSensorsArray(event.data[0]);
+            document.getElementById("p1").innerHTML = prob.getCoverage();
+            sPanel.repaint();
+            document.getElementById("p2").innerHTML = event.data[1];
+            document.getElementById("p3").innerHTML = event.data[0];
+        };
     }
 
-    var dim = 100;
+    /*var dim = 100;
 
-    /*w1 = new Worker("SimulatedAnnealing.js");
-    w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, dim]);
+    w1 = new Worker("SimulatedAnnealing.js");
+     w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, dim]);
+     
+     w1.onmessage = function (event) {
+     document.getElementById("p1").innerHTML = event.data;
+     };
+     
+     w2 = new Worker("EvolutionStrategies.js");
+     w2.postMessage([1, 10, 1 / Math.sqrt(dim), 5000 * dim, "sphere", 5.12, -5.12, dim]);
+     
+     w2.onmessage = function (event) {
+     document.getElementById("p2").innerHTML = event.data;
+     };
+     
+     w3 = new Worker("ParticleSwarmOptimization.js");
+     w3.postMessage([0.39, 2.55, 1.33, 25, 5000 * dim, "sphere", 5.12, -5.12, dim]);
+     
+     w3.onmessage = function (event) {
+     document.getElementById("p3").innerHTML = event.data;
+     };*/
 
-    w1.onmessage = function (event) {
-        document.getElementById("p1").innerHTML = event.data;
-    };
+    /*w4 = new Worker("ArtificialBeeColony.js");
+     w4.postMessage([20, 100, 5000 * dim, "sphere", 5.12, -5.12, dim]);
+     
+     w4.onmessage = function (event) {
+     document.getElementById("p4").innerHTML = event.data;
+     };*/
 
-    w2 = new Worker("EvolutionStrategies.js");
-    w2.postMessage([1, 10, 1 / Math.sqrt(dim), 5000 * dim, "sphere", 5.12, -5.12, dim]);
-
-    w2.onmessage = function (event) {
-        document.getElementById("p2").innerHTML = event.data;
-    };
-
-    w3 = new Worker("ParticleSwarmOptimization.js");
-    w3.postMessage([0.39, 2.55, 1.33, 25, 5000 * dim, "sphere", 5.12, -5.12, dim]);
-
-    w3.onmessage = function (event) {
-        document.getElementById("p3").innerHTML = event.data;
-    };
-
-    w4 = new Worker("ArtificialBeeColony.js");
-    w4.postMessage([20, 100, 5000 * dim, "sphere", 5.12, -5.12, dim]);
-
-    w4.onmessage = function (event) {
-        document.getElementById("p4").innerHTML = event.data;
-    };
-    
-    w5 = new Worker("DifferentialEvolution.js");
-    w5.postMessage([20, 0.9, 0.8, 5000 * dim, "sphere", 5.12, -5.12, dim]);
-
-    w5.onmessage = function (event) {
-        document.getElementById("p5").innerHTML = event.data;
-    };*/
+    /*w5 = new Worker("DifferentialEvolution.js");
+     w5.postMessage([20, 0.9, 0.8, 5000 * dim, "sphere", 5.12, -5.12, dim]);
+     
+     w5.onmessage = function (event) {
+     document.getElementById("p5").innerHTML = event.data;
+     };*/
 
 </script>
 </body>
