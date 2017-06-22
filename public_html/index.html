@@ -17,6 +17,7 @@
     <script src="SensorPanel.js"></script>
 
     <script src="ArtificialBeeColony_Sensor.js"></script>
+    <script src="DifferentialEvolution_Sensor.js"></script>
 
 </head>
 <body onload="startSensorProblem()">
@@ -42,13 +43,25 @@
 
         var sPanel = new SensorPanel(prob);
         sPanel.start();
-        
+
         var dim = numOfSensors * 2;
         document.getElementById("p1").innerHTML = prob.getCoverage();
-        w6 = new Worker("ArtificialBeeColony_Sensor.js");
-        w6.postMessage([20, 100, 10000, 0, 0, dim, numOfSensors, numOfPoints, radius, width, height, randomPointsArray]);
 
-        w6.onmessage = function (event) {
+        /*w6 = new Worker("ArtificialBeeColony_Sensor.js");
+         w6.postMessage([20, 100, 10000, 0, 0, dim, numOfSensors, numOfPoints, radius, width, height, randomPointsArray]);
+         
+         w6.onmessage = function (event) {
+         prob.setSensorsArray(event.data[0]);
+         document.getElementById("p1").innerHTML = prob.getCoverage();
+         sPanel.repaint();
+         document.getElementById("p2").innerHTML = event.data[1];
+         document.getElementById("p3").innerHTML = event.data[0];
+         };*/
+
+        w5 = new Worker("DifferentialEvolution_Sensor.js");
+        w5.postMessage([40, 0.9, 0.8, 100, 0, 0, dim, numOfSensors, numOfPoints, radius, width, height, randomPointsArray]);
+
+        w5.onmessage = function (event) {
             prob.setSensorsArray(event.data[0]);
             document.getElementById("p1").innerHTML = prob.getCoverage();
             sPanel.repaint();
@@ -58,8 +71,8 @@
     }
 
     /*var dim = 100;
-
-    w1 = new Worker("SimulatedAnnealing.js");
+     
+     w1 = new Worker("SimulatedAnnealing.js");
      w1.postMessage([0.999, 1000, 0.001, "sphere", 5.12, -5.12, dim]);
      
      w1.onmessage = function (event) {
@@ -87,7 +100,8 @@
      document.getElementById("p4").innerHTML = event.data;
      };*/
 
-    /*w5 = new Worker("DifferentialEvolution.js");
+    /*var dim = 30;
+     w5 = new Worker("DifferentialEvolution.js");
      w5.postMessage([20, 0.9, 0.8, 5000 * dim, "sphere", 5.12, -5.12, dim]);
      
      w5.onmessage = function (event) {
