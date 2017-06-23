@@ -123,6 +123,39 @@ onmessage = function (e) {
         case "sphere":
             func = sphere;
             break;
+        case "schwefel2_22":
+            func = schwefel2_22;
+            break;
+        case "schwefel1_2":
+            func = schwefel1_2;
+            break;
+        case "schwefel2_21":
+            func = schwefel2_21;
+            break;
+        case "rosenbrock":
+            func = rosenbrock;
+            break;
+        case "step":
+            func = step;
+            break;
+        case "quarticWithNoise":
+            func = quarticWithNoise;
+            break;
+        case "schwefel2_26":
+            func = schwefel2_26;
+            break;
+        case "rastrigin":
+            func = rastrigin;
+            break;
+        case "ackley":
+            func = ackley;
+            break;
+        case "griewank":
+            func = griewank;
+            break;
+        case "penalized":
+            func = penalized;
+            break;
         default:
             func = null;
     }

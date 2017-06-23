@@ -49,16 +49,16 @@
         var dim = numOfSensors * 2;
         document.getElementById("p1").innerHTML = prob.getCoverage();
 
-        w6 = new Worker("EvolutionStrategies_Sensor.js");
-        w6.postMessage([2, 40, 1 / Math.sqrt(dim), 500000, 0, 0, dim, numOfSensors, numOfPoints, radius, width, height, randomPointsArray]);
-
-        w6.onmessage = function (event) {
-            prob.setSensorsArray(event.data[0]);
-            document.getElementById("p1").innerHTML = prob.getCoverage();
-            sPanel.repaint();
-            document.getElementById("p2").innerHTML = event.data[1];
-            document.getElementById("p3").innerHTML = event.data[0];
-        };
+        /*w6 = new Worker("EvolutionStrategies_Sensor.js");
+         w6.postMessage([2, 40, 1 / Math.sqrt(dim), 500000, 0, 0, dim, numOfSensors, numOfPoints, radius, width, height, randomPointsArray]);
+         
+         w6.onmessage = function (event) {
+         prob.setSensorsArray(event.data[0]);
+         document.getElementById("p1").innerHTML = prob.getCoverage();
+         sPanel.repaint();
+         document.getElementById("p2").innerHTML = event.data[1];
+         document.getElementById("p3").innerHTML = event.data[0];
+         };*/
 
         /*w6 = new Worker("ParticleSwarmOptimization_Sensor.js");
          w6.postMessage([0.39, 2.55, 1.33, 30, 500000, 0, 0, dim, numOfSensors, numOfPoints, radius, width, height, randomPointsArray]);
@@ -119,12 +119,14 @@
      document.getElementById("p3").innerHTML = event.data;
      };*/
 
-    /*w4 = new Worker("ArtificialBeeColony.js");
-     w4.postMessage([20, 100, 5000 * dim, "sphere", 5.12, -5.12, dim]);
-     
-     w4.onmessage = function (event) {
-     document.getElementById("p4").innerHTML = event.data;
-     };*/
+    var dim = 30;
+    w4 = new Worker("ArtificialBeeColony.js");
+    w4.postMessage([20, 100, 5000 * dim, "penalized", 50, -50, dim]);
+
+    w4.onmessage = function (event) {
+        document.getElementById("p1").innerHTML = event.data[0];
+        document.getElementById("p2").innerHTML = event.data[1];
+    };
 
     /*var dim = 30;
      w5 = new Worker("DifferentialEvolution.js");

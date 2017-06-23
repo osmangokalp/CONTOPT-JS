@@ -42,7 +42,7 @@ ArtificialBeeColony.prototype.solve = function () {
             newPos[param2change] = curPos[param2change] + (curPos[param2change] - neighborPos[param2change]) * (Math.random() - 0.5) * 2;
 
             newPos = this.fixBoundary(newPos);
-            
+
             newF = this.calculateObjValue(newPos);
 
             if (newF <= this.foods[i].fitness) { //if the mutant solution is better than the original
@@ -189,7 +189,7 @@ ArtificialBeeColony.prototype.fixBoundary = function (array) {
             array[i] = this.lowerBound;
         }
     }
-    
+
     return array;
 };
 
@@ -198,6 +198,39 @@ onmessage = function (e) {
     switch (e.data[3]) {
         case "sphere":
             func = sphere;
+            break;
+        case "schwefel2_22":
+            func = schwefel2_22;
+            break;
+        case "schwefel1_2":
+            func = schwefel1_2;
+            break;
+        case "schwefel2_21":
+            func = schwefel2_21;
+            break;
+        case "rosenbrock":
+            func = rosenbrock;
+            break;
+        case "step":
+            func = step;
+            break;
+        case "quarticWithNoise":
+            func = quarticWithNoise;
+            break;
+        case "schwefel2_26":
+            func = schwefel2_26;
+            break;
+        case "rastrigin":
+            func = rastrigin;
+            break;
+        case "ackley":
+            func = ackley;
+            break;
+        case "griewank":
+            func = griewank;
+            break;
+        case "penalized":
+            func = penalized;
             break;
         default:
             func = null;
