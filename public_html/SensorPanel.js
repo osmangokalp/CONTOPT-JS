@@ -50,3 +50,8 @@ SensorPanel.prototype.repaint = function () {
         this.context.fill();
     }
 };
+
+SensorPanel.prototype.setSensorDeploymentProblem = function(prob) {
+    this.sensorDeploymentProblem = prob;
+    this.repaint();
+};

@@ -64,10 +64,10 @@ ParticleSwarmOptimization_Sensor.prototype.fixBoundary = function (array) {
 onmessage = function (e) {
    
     var parameters = {
-        "omega": e.data[0],
-        "phi_p": e.data[1],
-        "phi_g": e.data[2],
-        "swarmSize": e.data[3],
+        "swarmSize": e.data[0],
+        "omega": e.data[1],
+        "phi_p": e.data[2],
+        "phi_g": e.data[3],
         "maxNumOfFunctionEval": e.data[4],
         "upperBound": e.data[5],
         "lowerBound": e.data[6],

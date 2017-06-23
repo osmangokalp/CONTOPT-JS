@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="SimulatedAnnealing.js"></script>
+    <script src="EvolutionStrategies.js"></script>
+    <script src="ParticleSwarmOptimization.js"></script>
+    <script src="ArtificialBeeColony.js"></script>
+    <script src="DifferentialEvolution.js"></script>
+    <script src="BenchmarkFunctions.js"></script>
+    <script src="Solution.js"></script>
+    <script src="GaussianRNG.js"></script>
+    <script src="SensorDeploymentProblem.js"></script>
+    <script src="SensorPanel.js"></script>
+    <script src="ArtificialBeeColony_Sensor.js"></script>
+    <script src="DifferentialEvolution_Sensor.js"></script>
+    <script src="ParticleSwarmOptimization_Sensor.js"></script>
+    <script src="EvolutionStrategies_Sensor.js"></script>
+</head>
+<body onload="onBodyLoad()">
+
+<div>
+    <p>Select Algorithm</p>
+    <select id="algorithmOption" onchange="algorithmSelected()">
+        <option value="ArtificialBeeColony" selected>Artificial Bee Colony</option>
+        <option value="DifferentialEvolution">Differential Evolution</option>
+        <option value="ParticleSwarmOptimization">Particle Swarm Optimization</option>
+        <option value="EvolutionStrategies">Evolution Strategies</option>
+    </select>
+</div>
+
+<div>
+    Number of Sensors: <input type="text" id="numOfSensors" value="100"><br>
+    Number of Points: <input type="text" id="numOfPoints" value="1000"><br>
+    Sensor radius: <input type="text" id="radius" value="35"><br>
+    Area Width <input type="text" id="areaWidth" value="500"><br>
+    Area Height: <input type="text" id="areaHeight" value="500"><br>
+    Max Function Evaluation: <input type="text" id="maxFEs" value="50000">
+</div>
+
+<button onclick="renewSensorDeploymentProblem()">Create Sensor Problem</button>
+
+<div id="algorithmParameters">
+    
+</div>
+
+<button onclick="solveProblem()">Solve</button>
+
+<div id="results">
+    Iteration No: <p id="iterCounter"></p><br>
+    Best Fitness: <p id="fBest"></p><br>
+    Best Solution: <p id="solBest"></p>
+</div>
+
+<script>
+var sPanel;
+var prob;
+
+function onBodyLoad() {
+    algorithmSelected();
+    
+    createSensorDeploymentProblem();
+    sPanel = new SensorPanel(prob);
+    sPanel.start();
+    
+}
+
+function renewSensorDeploymentProblem() {
+    createSensorDeploymentProblem();
+    sPanel.setSensorDeploymentProblem(prob);
+}
+
+function createSensorDeploymentProblem() {
+    var numOfSensors = Number(document.getElementById("numOfSensors").value);
+    var numOfPoints = Number(document.getElementById("numOfPoints").value);
+    var width = Number(document.getElementById("areaWidth").value);
+    var height = Number(document.getElementById("areaHeight").value);
+    var radius = Number(document.getElementById("radius").value);
+
+    prob = new SensorDeploymentProblem(numOfSensors, numOfPoints, radius, width, height);
+    var randomSensorsArray = prob.generateRandomSensorsArray();
+    var randomPointsArray = prob.generateRandomPointsArray();
+    prob.setSensorsArray(randomSensorsArray);
+    prob.setPointsArray(randomPointsArray);
+    
+}
+
+function solveProblem() {
+    var x = document.getElementById("algorithmOption").value;
+    var maxFEs = Number(document.getElementById("maxFEs").value);
+    var numOfSensors = Number(document.getElementById("numOfSensors").value);
+    var numOfPoints = Number(document.getElementById("numOfPoints").value);
+    var width = Number(document.getElementById("areaWidth").value);
+    var height = Number(document.getElementById("areaHeight").value);
+    var radius = Number(document.getElementById("radius").value);
+    
+    switch (x) {
+        case "ArtificialBeeColony":
+            var NP = Number(document.getElementById("NP").value);
+            var limit = Number(document.getElementById("limit").value);
+            
+            w = new Worker("ArtificialBeeColony_Sensor.js");
+            w.postMessage([NP, limit, maxFEs, 0, 0, numOfSensors*2, numOfSensors, numOfPoints, radius, width, height, prob.getPointsArray()]);
+         
+            w.onmessage = function (event) {
+                prob.setSensorsArray(event.data[2]);
+                sPanel.repaint();
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                document.getElementById("fBest").innerHTML = event.data[1];
+                document.getElementById("solBest").innerHTML = event.data[2];
+            };
+            break;
+        case "DifferentialEvolution":
+            var NP = Number(document.getElementById("NP").value);
+            var CR = Number(document.getElementById("CR").value);
+            var F = Number(document.getElementById("F").value);
+            
+            w = new Worker("DifferentialEvolution_Sensor.js");
+            w.postMessage([NP, CR, F, maxFEs, 0, 0, numOfSensors*2, numOfSensors, numOfPoints, radius, width, height, prob.getPointsArray()]);
+         
+            w.onmessage = function (event) {
+                prob.setSensorsArray(event.data[2]);
+                sPanel.repaint();
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                document.getElementById("fBest").innerHTML = event.data[1];
+                document.getElementById("solBest").innerHTML = event.data[2];
+            };
+            break;
+        case "ParticleSwarmOptimization":
+            var NP = Number(document.getElementById("NP").value);
+            var W = Number(document.getElementById("W").value);
+            var C1 = Number(document.getElementById("C1").value);
+            var C2 = Number(document.getElementById("C2").value);
+            
+            w = new Worker("ParticleSwarmOptimization_Sensor.js");
+            w.postMessage([NP, W, C1, C2, maxFEs, 0, 0, numOfSensors*2, numOfSensors, numOfPoints, radius, width, height, prob.getPointsArray()]);
+         
+            w.onmessage = function (event) {
+                prob.setSensorsArray(event.data[2]);
+                sPanel.repaint();
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                document.getElementById("fBest").innerHTML = event.data[1];
+                document.getElementById("solBest").innerHTML = event.data[2];
+            };
+            break;
+        case "EvolutionStrategies":
+            var sigma = Number(document.getElementById("sigma").value);
+            var lambda = Number(document.getElementById("lambda").value);
+            var tau = Number(document.getElementById("tau").value);
+            
+            w = new Worker("EvolutionStrategies_Sensor.js");
+            w.postMessage([sigma, lambda, tau, maxFEs, 0, 0, numOfSensors*2, numOfSensors, numOfPoints, radius, width, height, prob.getPointsArray()]);
+         
+            w.onmessage = function (event) {
+                prob.setSensorsArray(event.data[2]);
+                sPanel.repaint();
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                document.getElementById("fBest").innerHTML = event.data[1];
+                document.getElementById("solBest").innerHTML = event.data[2];
+            };
+            break;
+    }
+}
+
+function algorithmSelected() {
+    var x = document.getElementById("algorithmOption").value;
+    var myNode = document.getElementById("algorithmParameters");
+    while (myNode.firstChild) {
+        myNode.removeChild(myNode.firstChild);
+    }
+    
+    switch (x) {
+        case "ArtificialBeeColony":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "20";
+            input.setAttribute("id", "NP");
+            myNode.appendChild(document.createTextNode("NP: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "100";
+            input.setAttribute("id", "limit");
+            myNode.appendChild(document.createTextNode("limit: "));
+            myNode.appendChild(input);
+            break;
+        case "DifferentialEvolution":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "20";
+            input.setAttribute("id", "NP");
+            myNode.appendChild(document.createTextNode("NP: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.9";
+            input.setAttribute("id", "CR");
+            myNode.appendChild(document.createTextNode("CR: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.8";
+            input.setAttribute("id", "F");
+            myNode.appendChild(document.createTextNode("F: "));
+            myNode.appendChild(input);
+            break;
+        case "ParticleSwarmOptimization":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "20";
+            input.setAttribute("id", "NP");
+            myNode.appendChild(document.createTextNode("NP: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.9";
+            input.setAttribute("id", "W");
+            myNode.appendChild(document.createTextNode("W: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.8";
+            input.setAttribute("id", "C1");
+            myNode.appendChild(document.createTextNode("C1: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.8";
+            input.setAttribute("id", "C2");
+            myNode.appendChild(document.createTextNode("C2: "));
+            myNode.appendChild(input);
+            break;
+        case "EvolutionStrategies":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "1";
+            input.setAttribute("id", "sigma");
+            myNode.appendChild(document.createTextNode("sigma: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "10";
+            input.setAttribute("id", "lambda");
+            myNode.appendChild(document.createTextNode("lambda: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.18";
+            input.setAttribute("id", "tau");
+            myNode.appendChild(document.createTextNode("tau: "));
+            myNode.appendChild(input);
+            break;
+    }
+}
+
+</script>
+
+
+</body>
+</html>
