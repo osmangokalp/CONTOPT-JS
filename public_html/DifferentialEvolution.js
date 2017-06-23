@@ -72,12 +72,13 @@ DifferentialEvolution.prototype.solve = function () {
                 if (fy < this.globalBest.fitness) {
                     this.globalBest.position = y.slice(0);
                     this.globalBest.fitness = fy;
-                    postMessage([this.globalBest.position, this.globalBest.fitness]);
+                    postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
                 }
             }
         }
         numOfFunctionEval += this.NP;
     }
+    postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
 };
 
 DifferentialEvolution.prototype.calculateObjValue = function (array) {

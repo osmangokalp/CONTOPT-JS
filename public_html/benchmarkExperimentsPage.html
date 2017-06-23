@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="SimulatedAnnealing.js"></script>
+    <script src="EvolutionStrategies.js"></script>
+    <script src="ParticleSwarmOptimization.js"></script>
+    <script src="ArtificialBeeColony.js"></script>
+    <script src="DifferentialEvolution.js"></script>
+    <script src="BenchmarkFunctions.js"></script>
+    <script src="Solution.js"></script>
+    <script src="GaussianRNG.js"></script>
+</head>
+<body onload="algorithmSelected()">
+
+<div>
+    <p>Select Algorithm</p>
+    <select id="algorithmOption" onchange="algorithmSelected()">
+        <option value="ArtificialBeeColony" selected>Artificial Bee Colony</option>
+        <option value="DifferentialEvolution">Differential Evolution</option>
+        <option value="ParticleSwarmOptimization">Particle Swarm Optimization</option>
+        <option value="EvolutionStrategies">Evolution Strategies</option>
+    </select>
+</div>
+
+<div>
+    <p>Select Benchmark Function</p>
+    <select id="benchmarkOption" onchange="benchmarkSelected()">
+        <option value="sphere" selected>sphere</option>
+        <option value="schwefel2_22">schwefel2_22</option>
+        <option value="schwefel1_2">schwefel1_2</option>
+        <option value="schwefel2_21">schwefel2_21</option>
+        <option value="rosenbrock">rosenbrock</option>
+        <option value="step">step</option>
+        <option value="quarticWithNoise">quarticWithNoise</option>
+        <option value="schwefel2_26">schwefel2_26</option>
+        <option value="rastrigin">rastrigin</option>
+        <option value="ackley">ackley</option>
+        <option value="griewank">griewank</option>
+        <option value="penalized">penalized</option>
+    </select>
+</div>
+
+<div>
+    Dimension: <input type="text" id="dimension" value="30"><br>
+    Max Function Evaluation: <input type="text" id="maxFEs" value="50000"><br>
+    Upper Search Bound <input type="text" id="upperBound" value="100"><br>
+    Lower Search Bound: <input type="text" id="lowerBound" value="-100">
+</div>
+
+<div id="algorithmParameters">
+    
+</div>
+
+<button onclick="solveProblem()">Solve</button>
+
+<div id="results">
+    Iteration No: <p id="iterCounter"></p><br>
+    Best Fitness: <p id="fBest"></p><br>
+    Best Solution: <p id="solBest"></p>
+</div>
+
+<script>
+function solveProblem() {
+    var x = document.getElementById("algorithmOption").value;
+    var dim = Number(document.getElementById("dimension").value);
+    var maxFEs = Number(document.getElementById("maxFEs").value);
+    var upperBound = Number(document.getElementById("upperBound").value);
+    var lowerBound = Number(document.getElementById("lowerBound").value);
+    var objFunc = document.getElementById("benchmarkOption").value;
+    
+    switch (x) {
+        case "ArtificialBeeColony":
+            var NP = Number(document.getElementById("NP").value);
+            var limit = Number(document.getElementById("limit").value);
+            
+            var w = new Worker("ArtificialBeeColony.js");
+            w.postMessage([NP, limit, maxFEs, objFunc, upperBound, lowerBound, dim]);
+            w.onmessage = function (event) {
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                document.getElementById("fBest").innerHTML = event.data[1];
+                document.getElementById("solBest").innerHTML = event.data[2];
+                
+            };
+            break;
+        case "DifferentialEvolution":
+            var NP = Number(document.getElementById("NP").value);
+            var CR = Number(document.getElementById("CR").value);
+            var F = Number(document.getElementById("F").value);
+            
+            var w = new Worker("DifferentialEvolution.js");
+            w.postMessage([NP, CR, F, maxFEs, objFunc, upperBound, lowerBound, dim]);
+            w.onmessage = function (event) {
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                document.getElementById("fBest").innerHTML = event.data[1];
+                document.getElementById("solBest").innerHTML = event.data[2];
+                
+            };
+            break;
+        case "ParticleSwarmOptimization":
+            var NP = Number(document.getElementById("NP").value);
+            var W = Number(document.getElementById("W").value);
+            var C1 = Number(document.getElementById("C1").value);
+            var C2 = Number(document.getElementById("C2").value);
+            
+            var w = new Worker("ParticleSwarmOptimization.js");
+            w.postMessage([NP, W, C1, C2, maxFEs, objFunc, upperBound, lowerBound, dim]);
+            w.onmessage = function (event) {
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                document.getElementById("fBest").innerHTML = event.data[1];
+                document.getElementById("solBest").innerHTML = event.data[2];
+                
+            };
+            break;
+        case "EvolutionStrategies":
+            var sigma = Number(document.getElementById("sigma").value);
+            var lambda = Number(document.getElementById("lambda").value);
+            var tau = Number(document.getElementById("tau").value);
+            
+            var w = new Worker("EvolutionStrategies.js");
+            w.postMessage([sigma, lambda, tau, maxFEs, objFunc, upperBound, lowerBound, dim]);
+            w.onmessage = function (event) {
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                document.getElementById("fBest").innerHTML = event.data[1];
+                document.getElementById("solBest").innerHTML = event.data[2];
+                
+            };
+            break;
+    }
+}
+
+function algorithmSelected() {
+    var x = document.getElementById("algorithmOption").value;
+    var myNode = document.getElementById("algorithmParameters");
+    while (myNode.firstChild) {
+        myNode.removeChild(myNode.firstChild);
+    }
+    
+    switch (x) {
+        case "ArtificialBeeColony":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "20";
+            input.setAttribute("id", "NP");
+            myNode.appendChild(document.createTextNode("NP: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "100";
+            input.setAttribute("id", "limit");
+            myNode.appendChild(document.createTextNode("limit: "));
+            myNode.appendChild(input);
+            break;
+        case "DifferentialEvolution":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "20";
+            input.setAttribute("id", "NP");
+            myNode.appendChild(document.createTextNode("NP: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.9";
+            input.setAttribute("id", "CR");
+            myNode.appendChild(document.createTextNode("CR: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.8";
+            input.setAttribute("id", "F");
+            myNode.appendChild(document.createTextNode("F: "));
+            myNode.appendChild(input);
+            break;
+        case "ParticleSwarmOptimization":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "20";
+            input.setAttribute("id", "NP");
+            myNode.appendChild(document.createTextNode("NP: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.9";
+            input.setAttribute("id", "W");
+            myNode.appendChild(document.createTextNode("W: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.8";
+            input.setAttribute("id", "C1");
+            myNode.appendChild(document.createTextNode("C1: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.8";
+            input.setAttribute("id", "C2");
+            myNode.appendChild(document.createTextNode("C2: "));
+            myNode.appendChild(input);
+            break;
+        case "EvolutionStrategies":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "1";
+            input.setAttribute("id", "sigma");
+            myNode.appendChild(document.createTextNode("sigma: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "10";
+            input.setAttribute("id", "lambda");
+            myNode.appendChild(document.createTextNode("lambda: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.18";
+            input.setAttribute("id", "tau");
+            myNode.appendChild(document.createTextNode("tau: "));
+            myNode.appendChild(input);
+            break;
+    }
+}
+
+function benchmarkSelected() {
+    var x = document.getElementById("benchmarkOption").value;
+    
+    switch (x) {
+        case "sphere":
+            document.getElementById("upperBound").value = 100;
+            document.getElementById("lowerBound").value = -100;
+            break;
+        case "schwefel2_22":
+            document.getElementById("upperBound").value = 10;
+            document.getElementById("lowerBound").value = -10;
+            break;
+        case "schwefel1_2":
+            document.getElementById("upperBound").value = 100;
+            document.getElementById("lowerBound").value = -100;
+            break;
+        case "schwefel2_21":
+            document.getElementById("upperBound").value = 100;
+            document.getElementById("lowerBound").value = -100;
+            break;
+        case "rosenbrock":
+            document.getElementById("upperBound").value = 30;
+            document.getElementById("lowerBound").value = -30;
+            break;
+        case "step":
+            document.getElementById("upperBound").value = 100;
+            document.getElementById("lowerBound").value = -100;
+            break;
+        case "quarticWithNoise":
+            document.getElementById("upperBound").value = 1.28;
+            document.getElementById("lowerBound").value = -1.28;
+            break;
+        case "schwefel2_26":
+            document.getElementById("upperBound").value = 500;
+            document.getElementById("lowerBound").value = -500;
+            break;
+        case "rastrigin":
+            document.getElementById("upperBound").value = 5.12;
+            document.getElementById("lowerBound").value = -5.12;
+            break;
+        case "ackley":
+            document.getElementById("upperBound").value = 32;
+            document.getElementById("lowerBound").value = -32;
+            break;
+        case "griewank":
+            document.getElementById("upperBound").value = 600;
+            document.getElementById("lowerBound").value = -600;
+            break;
+        case "penalized":
+            document.getElementById("upperBound").value = 50;
+            document.getElementById("lowerBound").value = -50;
+            break;
+        default:
+            break;
+    }
+}
+
+</script>
+
+
+</body>
+</html>

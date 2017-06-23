@@ -79,12 +79,13 @@ ParticleSwarmOptimization.prototype.solve = function () {
                     //update the swarm's best known position
                     this.globalBest.position = particle.bestPosition.slice(0);
                     this.globalBest.fitness = particle.bestFitness;
-                    postMessage([this.globalBest.position, this.globalBest.fitness]);
+                    postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
                 }
             }
         }
         numOfFunctionEval += this.swarmSize;
     }
+    postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
 };
 
 ParticleSwarmOptimization.prototype.fixBoundary = function (array) {
@@ -143,10 +144,10 @@ onmessage = function (e) {
     }
 
     var parameters = {
-        "omega": e.data[0],
-        "phi_p": e.data[1],
-        "phi_g": e.data[2],
-        "swarmSize": e.data[3],
+        "swarmSize": e.data[0],
+        "omega": e.data[1],
+        "phi_p": e.data[2],
+        "phi_g": e.data[3],
         "maxNumOfFunctionEval": e.data[4],
         "objFunc": func,
         "upperBound": e.data[6],

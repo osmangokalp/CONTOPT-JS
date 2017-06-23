@@ -58,10 +58,10 @@ EvolutionStrategies.prototype.solve = function () {
         }
         
         if (numOfFunctionEval % 1000 === 0) {
-            postMessage([this.parent.position, this.parent.fitness]);
+            postMessage([numOfFunctionEval, this.parent.fitness, this.parent.position]);
         }
     }
-    postMessage([this.parent.position, this.parent.fitness]);
+    postMessage([numOfFunctionEval, this.parent.fitness, this.parent.position]);
 };
 
 EvolutionStrategies.prototype.createNeighbor = function () {
