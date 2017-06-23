@@ -46,7 +46,7 @@ SensorPanel.prototype.repaint = function () {
         
         this.context.beginPath();
         this.context.arc(posX, posY, radius / 28, 0, 2 * Math.PI);
-        this.context.fillStyle = 'rgb(255, 0, 0)';
+        this.context.fillStyle = 'rgba(255, 0, 0, 0.3)';
         this.context.fill();
     }
 };

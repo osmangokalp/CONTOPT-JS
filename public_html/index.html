@@ -32,7 +32,7 @@
 <script>
     function startSensorProblem() {
         var numOfSensors = 100;
-        var numOfPoints = 2000;
+        var numOfPoints = 1000;
         var width = 500;
         var height = 500;
         var radius = 35;
@@ -50,7 +50,7 @@
         document.getElementById("p1").innerHTML = prob.getCoverage();
 
         w6 = new Worker("EvolutionStrategies_Sensor.js");
-        w6.postMessage([1, 10, 1 / Math.sqrt(dim), 500000, 0, 0, dim, numOfSensors, numOfPoints, radius, width, height, randomPointsArray]);
+        w6.postMessage([2, 40, 1 / Math.sqrt(dim), 500000, 0, 0, dim, numOfSensors, numOfPoints, radius, width, height, randomPointsArray]);
 
         w6.onmessage = function (event) {
             prob.setSensorsArray(event.data[0]);
@@ -105,7 +105,7 @@
 
     /*var dim = 30;
      w2 = new Worker("EvolutionStrategies.js");
-     w2.postMessage([1, 10, 1 / Math.sqrt(dim), 5000 * dim, "sphere", 5.12, -5.12, dim]);
+     w2.postMessage([1, 10, 1 / Math.sqrt(dim), 5000*dim, "sphere", 5.12, -5.12, dim]);
      
      w2.onmessage = function (event) {
      document.getElementById("p2").innerHTML = event.data;

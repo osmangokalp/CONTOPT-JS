@@ -19,8 +19,12 @@ EvolutionStrategies_Sensor.prototype.calculateObjValue = function (array) {
 };
 
 EvolutionStrategies_Sensor.prototype.createRandomSolution = function(){
-    console.log("rand arr: " + this.sensorDeploymentProblem.generateRandomSensorsArray());
     return this.sensorDeploymentProblem.generateRandomSensorsArray();
+};
+
+EvolutionStrategies_Sensor.prototype.createParent = function () {
+    var randomPos = this.sensorDeploymentProblem.generateRandomSensorsArray();
+    return new ESUncorrelatedSolution(randomPos, this.calculateObjValue(randomPos), this.sigma);
 };
 
 EvolutionStrategies_Sensor.prototype.checkBoundary = function (num, i) {
@@ -30,7 +34,7 @@ EvolutionStrategies_Sensor.prototype.checkBoundary = function (num, i) {
     if (i % 2 === 0 && num > this.sensorDeploymentProblem.getAreaWidth()) {
         return false;
     }
-    if (i % 2 === 1 && num > this.sensorDeploymentProblem.getAreaHeight()()) {
+    if (i % 2 === 1 && num > this.sensorDeploymentProblem.getAreaHeight()) {
         return false;
     }
     return true;

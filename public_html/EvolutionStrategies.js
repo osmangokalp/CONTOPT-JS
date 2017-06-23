@@ -8,6 +8,7 @@ importScripts('./BenchmarkFunctions.js', './Solution.js', './GaussianRNG.js');
  * Uncorrelated mutation with one sigma
  */
 function EvolutionStrategies(parameters) {
+    this.sigma = parameters.sigma;
     this.lambda = parameters.lambda;
     this.tau = parameters.tau;
     this.maxNumOfFunctionEval = parameters.maxNumOfFunctionEval;
@@ -16,9 +17,7 @@ function EvolutionStrategies(parameters) {
     this.lowerBound = parameters.lowerBound;
     this.dimension = parameters.dimension;
     this.rng = new MarsagliaPolar();
-    var randomPos = this.createRandomSolution();
-    this.parent = new ESUncorrelatedSolution(randomPos, this.calculateObjValue(randomPos), parameters.sigma);
-    
+    this.parent = null;
 }
 ;
 
@@ -30,12 +29,20 @@ EvolutionStrategies.prototype.calculateObjValue = function (array) {
     return this.objFunc(array);
 };
 
+EvolutionStrategies.prototype.createParent = function () {
+    var randomPos = this.createRandomSolution();
+    return new ESUncorrelatedSolution(randomPos, this.calculateObjValue(randomPos), this.sigma);
+};
+
 EvolutionStrategies.prototype.solve = function () {
     var numOfFunctionEval = 0;
     var i, neighbor;
-    var bestFitness = Number.MAX_VALUE, bestPosition = [], bestSigma;
+    var bestFitness, bestPosition = [], bestSigma;
+    
+    this.parent = this.createParent();
     
     while (numOfFunctionEval + this.lambda <= this.maxNumOfFunctionEval) {
+        bestFitness = Number.MAX_VALUE;
         for (i = 0; i < this.lambda; i++) {
             neighbor = this.createNeighbor();
             if(neighbor.fitness <= bestFitness) { //store the properties of the best child
@@ -48,18 +55,20 @@ EvolutionStrategies.prototype.solve = function () {
         
         if (bestFitness <= this.parent.fitness) { //update the parent
             this.parent = new ESUncorrelatedSolution(bestPosition, bestFitness, bestSigma);
+        }
+        
+        if (numOfFunctionEval % 1000 === 0) {
             postMessage([this.parent.position, this.parent.fitness]);
         }
     }
-    
+    postMessage([this.parent.position, this.parent.fitness]);
 };
 
 EvolutionStrategies.prototype.createNeighbor = function () {
     var neighborPos, sigmaPrime, i;
-    var sigma = this.parent.sigma;
     var step;
     neighborPos = this.parent.position.slice(0);
-    sigmaPrime = sigma * Math.exp(this.tau * this.rng.generateRandom(0, 1));
+    sigmaPrime = this.parent.sigma * Math.exp(this.tau * this.rng.generateRandom(0, 1));
     for (i = 0; i < this.dimension; i++) { //mutate each dimension
         do {
             step = sigmaPrime * this.rng.generateRandom(0, 1);
