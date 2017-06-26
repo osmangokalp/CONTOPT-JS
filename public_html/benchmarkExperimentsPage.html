@@ -17,54 +17,97 @@ and open the template in the editor.
     <script src="BenchmarkFunctions.js"></script>
     <script src="Solution.js"></script>
     <script src="GaussianRNG.js"></script>
+    <style>
+table {
+    border: 1px solid black;
+    width: 100%;
+}
+
+td {
+    text-align: left;
+    padding: 8px;
+}
+
+input {
+    width: 50px;
+}
+</style>
 </head>
 <body onload="algorithmSelected()">
 
-<div>
-    <p>Select Algorithm</p>
-    <select id="algorithmOption" onchange="algorithmSelected()">
-        <option value="ArtificialBeeColony" selected>Artificial Bee Colony</option>
-        <option value="DifferentialEvolution">Differential Evolution</option>
-        <option value="ParticleSwarmOptimization">Particle Swarm Optimization</option>
-        <option value="EvolutionStrategies">Evolution Strategies</option>
-    </select>
+    <table>
+        <tr style="background-color:#d5ef9f">
+            <td>
+        <div>
+            <p><b>Select Algorithm</b></p>
+            <select id="algorithmOption" onchange="algorithmSelected()">
+                <option value="ArtificialBeeColony" selected>Artificial Bee Colony</option>
+                <option value="DifferentialEvolution">Differential Evolution</option>
+                <option value="ParticleSwarmOptimization">Particle Swarm Optimization</option>
+                <option value="EvolutionStrategies">Evolution Strategies</option>
+            </select>
+        </div>
+    </td>
+    <td>
+    <div>
+        <p><b>Select Benchmark Function</b></p>
+        <select id="benchmarkOption" onchange="benchmarkSelected()">
+            <option value="sphere" selected>sphere</option>
+            <option value="schwefel2_22">schwefel2_22</option>
+            <option value="schwefel1_2">schwefel1_2</option>
+            <option value="schwefel2_21">schwefel2_21</option>
+            <option value="rosenbrock">rosenbrock</option>
+            <option value="step">step</option>
+            <option value="quarticWithNoise">quarticWithNoise</option>
+            <option value="schwefel2_26">schwefel2_26</option>
+            <option value="rastrigin">rastrigin</option>
+            <option value="ackley">ackley</option>
+            <option value="griewank">griewank</option>
+            <option value="penalized">penalized</option>
+        </select>
+    </div>
+</td>
+</tr>
+<tr style="background-color: #54a759">
+    <td>
+        <p><b>Set Algorithm Parameters</b></p>
+        <div id="algorithmParameters">
+    
 </div>
-
-<div>
-    <p>Select Benchmark Function</p>
-    <select id="benchmarkOption" onchange="benchmarkSelected()">
-        <option value="sphere" selected>sphere</option>
-        <option value="schwefel2_22">schwefel2_22</option>
-        <option value="schwefel1_2">schwefel1_2</option>
-        <option value="schwefel2_21">schwefel2_21</option>
-        <option value="rosenbrock">rosenbrock</option>
-        <option value="step">step</option>
-        <option value="quarticWithNoise">quarticWithNoise</option>
-        <option value="schwefel2_26">schwefel2_26</option>
-        <option value="rastrigin">rastrigin</option>
-        <option value="ackley">ackley</option>
-        <option value="griewank">griewank</option>
-        <option value="penalized">penalized</option>
-    </select>
-</div>
-
-<div>
+    </td>
+    <td>
+        <div>
+            <p><b>Set Problem Parameters</b></p>
     Dimension: <input type="text" id="dimension" value="30"><br>
     Max Function Evaluation: <input type="text" id="maxFEs" value="50000"><br>
     Upper Search Bound <input type="text" id="upperBound" value="100"><br>
     Lower Search Bound: <input type="text" id="lowerBound" value="-100">
 </div>
+    </td>
+</tr>
+</table>
 
-<div id="algorithmParameters">
-    
-</div>
+<button style="font-weight:bold;background-color:#807d15;margin-top:30px;margin-bottom:30px;height:30px;width:70px" onclick="solveProblem()">Start</button>
 
-<button onclick="solveProblem()">Solve</button>
-
-<div id="results">
-    Iteration No: <p id="iterCounter"></p><br>
-    Best Fitness: <p id="fBest"></p><br>
-    Best Solution: <p id="solBest"></p>
+<div style="background-color: #fffdaa" id="results">
+    <p><b>Results Window</b></p>
+    <table>
+        <tr>
+            <td style="padding: 2px">
+                <b>Iteration No:</b> <div id="iterCounter"></div><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 2px">
+                <b>Best Fitness:</b> <div id="fBest"></div><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 2px">
+                <b>Best Solution:</b> <div id="solBest"></div>
+            </td>
+        </tr>
+    </table>
 </div>
 
 <script>
