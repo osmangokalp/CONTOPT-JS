@@ -23,40 +23,91 @@ and open the template in the editor.
     <script src="DifferentialEvolution_Sensor.js"></script>
     <script src="ParticleSwarmOptimization_Sensor.js"></script>
     <script src="EvolutionStrategies_Sensor.js"></script>
+    
+    <style>
+table {
+    border: 1px solid black;
+    width: 100%;
+}
+
+td {
+    text-align: left;
+    padding: 8px;
+    vertical-align: top;
+}
+
+input {
+    width: 50px;
+}
+</style>
 </head>
 <body onload="onBodyLoad()">
 
-<div>
-    <p>Select Algorithm</p>
-    <select id="algorithmOption" onchange="algorithmSelected()">
-        <option value="ArtificialBeeColony" selected>Artificial Bee Colony</option>
-        <option value="DifferentialEvolution">Differential Evolution</option>
-        <option value="ParticleSwarmOptimization">Particle Swarm Optimization</option>
-        <option value="EvolutionStrategies">Evolution Strategies</option>
-    </select>
-</div>
-
-<div>
-    Number of Sensors: <input type="text" id="numOfSensors" value="100"><br>
-    Number of Points: <input type="text" id="numOfPoints" value="1000"><br>
-    Sensor radius: <input type="text" id="radius" value="35"><br>
-    Area Width <input type="text" id="areaWidth" value="500"><br>
-    Area Height: <input type="text" id="areaHeight" value="500"><br>
-    Max Function Evaluation: <input type="text" id="maxFEs" value="50000">
-</div>
-
-<button onclick="renewSensorDeploymentProblem()">Create Sensor Problem</button>
-
-<div id="algorithmParameters">
+    <table>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <div>
+                                Number of Sensors: <input type="text" id="numOfSensors" value="100"><br>
+                                Number of Points: <input type="text" id="numOfPoints" value="1000"><br>
+                                Sensor radius: <input type="text" id="radius" value="35"><br>
+                                Area Width <input type="text" id="areaWidth" value="500"><br>
+                                Area Height: <input type="text" id="areaHeight" value="500"><br>
+                                Max Function Evaluation: <input type="text" id="maxFEs" value="50000"><br>
+                                <button onclick="renewSensorDeploymentProblem()">Create Sensor Problem</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                <p>Select Algorithm</p>
+                                <select id="algorithmOption" onchange="algorithmSelected()">
+                                    <option value="ArtificialBeeColony" selected>Artificial Bee Colony</option>
+                                    <option value="DifferentialEvolution">Differential Evolution</option>
+                                    <option value="ParticleSwarmOptimization">Particle Swarm Optimization</option>
+                                    <option value="EvolutionStrategies">Evolution Strategies</option>
+                                </select>
+                                <div id="algorithmParameters">
     
-</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button onclick="solveProblem()">Solve</button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td id="sensorPanelPlace">
+                
+            </td>
+        </tr>
+    </table>
 
-<button onclick="solveProblem()">Solve</button>
-
-<div id="results">
-    Iteration No: <p id="iterCounter"></p><br>
-    Best Fitness: <p id="fBest"></p><br>
-    Best Solution: <p id="solBest"></p>
+<div style="background-color: #fffdaa" id="results">
+    <p><b>Results Window</b></p>
+    <table>
+        <tr>
+            <td style="padding: 2px">
+                <b>Iteration No:</b> <div id="iterCounter"></div><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 2px">
+                <b>Best Fitness:</b> <div id="fBest"></div><br>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 2px">
+                <b>Best Solution:</b> <div id="solBest"></div>
+            </td>
+        </tr>
+    </table>
 </div>
 
 <script>

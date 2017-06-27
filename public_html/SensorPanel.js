@@ -12,7 +12,8 @@ SensorPanel.prototype.start = function () {
     this.canvas.height = this.sensorDeploymentProblem.getAreaHeight();
     this.canvas.style = "border:1px solid #c3c3c3;background-color: #f1f1f1;";
     this.context = this.canvas.getContext("2d");
-    document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+    document.getElementById("sensorPanelPlace").appendChild(this.canvas);
+    //document.body.insertBefore(this.canvas, document.body.childNodes[0]);
     this.repaint();
 };
 
