@@ -39,6 +39,7 @@ ArtificialBeeColony_Sensor.prototype.createInitialPopulation = function () {
         }
     }
     this.globalBest = new Solution(this.foods[minIndex].position.slice(0), min);
+    console.log("Initial: " + min);
 };
 
 ArtificialBeeColony_Sensor.prototype.fixBoundary = function (array) {
