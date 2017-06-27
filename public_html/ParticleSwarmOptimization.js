@@ -86,6 +86,7 @@ ParticleSwarmOptimization.prototype.solve = function () {
         numOfFunctionEval += this.swarmSize;
     }
     postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
+    console.log(this.globalBest.fitness);
 };
 
 ParticleSwarmOptimization.prototype.fixBoundary = function (array) {

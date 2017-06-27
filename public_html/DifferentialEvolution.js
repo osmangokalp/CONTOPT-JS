@@ -79,6 +79,7 @@ DifferentialEvolution.prototype.solve = function () {
         numOfFunctionEval += this.NP;
     }
     postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
+    console.log(this.globalBest.fitness);
 };
 
 DifferentialEvolution.prototype.calculateObjValue = function (array) {

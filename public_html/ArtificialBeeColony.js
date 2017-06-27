@@ -29,8 +29,6 @@ ArtificialBeeColony.prototype.solve = function () {
     this.createInitialPopulation();
 
     while (numOfFunctionEval + this.NP <= this.maxNumOfFunctionEval) {
-        console.log(numOfFunctionEval);
-
         //send employee bees
         for (i = 0; i < this.foodNumber; i++) {
             param2change = Math.floor((Math.random() * this.dimension));
@@ -156,6 +154,7 @@ ArtificialBeeColony.prototype.solve = function () {
         }
     }
     postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
+    console.log(this.globalBest.fitness);
 };
 
 ArtificialBeeColony.prototype.calculateObjValue = function (array) {

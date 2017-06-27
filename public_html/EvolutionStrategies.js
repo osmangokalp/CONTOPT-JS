@@ -62,6 +62,7 @@ EvolutionStrategies.prototype.solve = function () {
         }
     }
     postMessage([numOfFunctionEval, this.parent.fitness, this.parent.position]);
+    console.log( this.parent.fitness);
 };
 
 EvolutionStrategies.prototype.createNeighbor = function () {
