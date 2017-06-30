@@ -29,7 +29,7 @@ input {
 }
 </style>
 </head>
-<body onload="algorithmSelected()">
+<body onload="onloadFunction()">
 
     <table>
         <tr style="background-color:#d5ef9f">
@@ -107,6 +107,12 @@ input {
 </div>
 
 <script>
+    function onloadFunction() {
+        algorithmSelected();
+        document.getElementById("upperBound").disabled = true;
+        document.getElementById("lowerBound").disabled = true;
+    }
+    
 function solveProblem() {
     var x = document.getElementById("algorithmOption").value;
     var dim = Number(document.getElementById("dimension").value);
