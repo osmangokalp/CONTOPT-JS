@@ -94,7 +94,7 @@ input {
     <table>
         <tr>
             <td style="padding: 2px">
-                <b>Iteration No:</b> <div id="iterCounter"></div><br>
+                <b>FEs No:</b> <div id="iterCounter"></div><br>
             </td>
         </tr>
         <tr>
@@ -128,8 +128,9 @@ function solveProblem() {
             w.postMessage([NP, limit, maxFEs, objFunc, upperBound, lowerBound, dim]);
             w.onmessage = function (event) {
                 document.getElementById("iterCounter").innerHTML = event.data[0];
-                document.getElementById("fBest").innerHTML = event.data[1];
-                document.getElementById("solBest").innerHTML = event.data[2];
+                var num = Number(event.data[1]);
+                document.getElementById("fBest").innerHTML = num.toExponential(2);
+                document.getElementById("solBest").innerHTML = applyPrecisionToResults(event.data[2]);
                 
             };
             break;
@@ -142,8 +143,9 @@ function solveProblem() {
             w.postMessage([NP, CR, F, maxFEs, objFunc, upperBound, lowerBound, dim]);
             w.onmessage = function (event) {
                 document.getElementById("iterCounter").innerHTML = event.data[0];
-                document.getElementById("fBest").innerHTML = event.data[1];
-                document.getElementById("solBest").innerHTML = event.data[2];
+                var num = Number(event.data[1]);
+                document.getElementById("fBest").innerHTML = num.toExponential(2);
+                document.getElementById("solBest").innerHTML = applyPrecisionToResults(event.data[2]);
                 
             };
             break;
@@ -157,8 +159,9 @@ function solveProblem() {
             w.postMessage([NP, W, C1, C2, maxFEs, objFunc, upperBound, lowerBound, dim]);
             w.onmessage = function (event) {
                 document.getElementById("iterCounter").innerHTML = event.data[0];
-                document.getElementById("fBest").innerHTML = event.data[1];
-                document.getElementById("solBest").innerHTML = event.data[2];
+                var num = Number(event.data[1]);
+                document.getElementById("fBest").innerHTML = num.toExponential(2);
+                document.getElementById("solBest").innerHTML = applyPrecisionToResults(event.data[2]);
                 
             };
             break;
@@ -171,12 +174,24 @@ function solveProblem() {
             w.postMessage([sigma, lambda, tau, maxFEs, objFunc, upperBound, lowerBound, dim]);
             w.onmessage = function (event) {
                 document.getElementById("iterCounter").innerHTML = event.data[0];
-                document.getElementById("fBest").innerHTML = event.data[1];
-                document.getElementById("solBest").innerHTML = event.data[2];
+                var num = Number(event.data[1]);
+                document.getElementById("fBest").innerHTML = num.toExponential(2);
+                document.getElementById("solBest").innerHTML = applyPrecisionToResults(event.data[2]);
                 
             };
             break;
     }
+}
+
+function applyPrecisionToResults(array) {
+    var str = "";
+    for (var i = 0; i < array.length; i++) {
+        var num = Number(array[i]);
+        num = num.toExponential(2);
+        
+        str += num + ", ";
+    }
+    return str;
 }
 
 function algorithmSelected() {

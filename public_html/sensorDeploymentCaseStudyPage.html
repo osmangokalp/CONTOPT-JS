@@ -94,17 +94,17 @@ input {
     <table>
         <tr>
             <td style="padding: 2px">
-                <b>Iteration No:</b> <div id="iterCounter"></div><br>
+                <b>FEs No:</b> <div id="iterCounter"></div><br>
             </td>
         </tr>
         <tr>
             <td style="padding: 2px">
-                <b>Best Fitness:</b> <div id="fBest"></div><br>
+                <b>Coverage (%):</b> <div id="fBest"></div><br>
             </td>
         </tr>
         <tr>
             <td style="padding: 2px">
-                <b>Best Solution:</b> <div id="solBest"></div>
+                <b>Sensor Coordinates:</b> <div id="solBest"></div>
             </td>
         </tr>
     </table>
@@ -142,6 +142,20 @@ function createSensorDeploymentProblem() {
     prob.setPointsArray(randomPointsArray);
 }
 
+function parseSensorArray(array) {
+    var str = "";
+    for (var i = 0; i < array.length; i+=2) {
+        var num1 = Number(array[i]);
+        num1 = num1.toFixed(2);
+        
+        var num2 = Number(array[i + 1]);
+        num2 = num2.toFixed(2);
+        
+        str += "[" + num1 + ", " + num2 + "] ";
+    }
+    return str;
+}
+
 function solveProblem() {
     var x = document.getElementById("algorithmOption").value;
     var maxFEs = Number(document.getElementById("maxFEs").value);
@@ -163,8 +177,8 @@ function solveProblem() {
                 prob.setSensorsArray(event.data[2]);
                 sPanel.repaint();
                 document.getElementById("iterCounter").innerHTML = event.data[0];
-                document.getElementById("fBest").innerHTML = event.data[1];
-                document.getElementById("solBest").innerHTML = event.data[2];
+                document.getElementById("fBest").innerHTML = -1.0 * event.data[1];
+                document.getElementById("solBest").innerHTML = parseSensorArray(event.data[2]);
             };
             break;
         case "DifferentialEvolution":
@@ -180,7 +194,7 @@ function solveProblem() {
                 sPanel.repaint();
                 document.getElementById("iterCounter").innerHTML = event.data[0];
                 document.getElementById("fBest").innerHTML = event.data[1];
-                document.getElementById("solBest").innerHTML = event.data[2];
+                document.getElementById("solBest").innerHTML = parseSensorArray(event.data[2]);
             };
             break;
         case "ParticleSwarmOptimization":
@@ -197,7 +211,7 @@ function solveProblem() {
                 sPanel.repaint();
                 document.getElementById("iterCounter").innerHTML = event.data[0];
                 document.getElementById("fBest").innerHTML = event.data[1];
-                document.getElementById("solBest").innerHTML = event.data[2];
+                document.getElementById("solBest").innerHTML = parseSensorArray(event.data[2]);
             };
             break;
         case "EvolutionStrategies":
@@ -213,7 +227,7 @@ function solveProblem() {
                 sPanel.repaint();
                 document.getElementById("iterCounter").innerHTML = event.data[0];
                 document.getElementById("fBest").innerHTML = event.data[1];
-                document.getElementById("solBest").innerHTML = event.data[2];
+                document.getElementById("solBest").innerHTML = parseSensorArray(event.data[2]);
             };
             break;
     }
