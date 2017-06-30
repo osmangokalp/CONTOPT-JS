@@ -1,3 +1,5 @@
+"use strict";
+
 var INF = 1.0e99;
 var EPS = 1.0e-14;
 var E = 2.7182818284590452353602874713526625;
@@ -6,7 +8,7 @@ var PI = 3.1415926535897932384626433832795029;
 function sphere(arr) {
     var arrLength = arr.length;
     var total = 0.0;
-    for (i = 0; i < arrLength; i++) {
+    for (var i = 0; i < arrLength; i++) {
         total += arr[i] * arr[i];
     }
 

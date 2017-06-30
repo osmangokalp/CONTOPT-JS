@@ -1,4 +1,3 @@
-
 "use strict";
 
 importScripts('./ContinuousOptimizer.js', './GaussianRNG.js');
