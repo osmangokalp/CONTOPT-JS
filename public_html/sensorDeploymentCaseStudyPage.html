@@ -124,8 +124,13 @@ function onBodyLoad() {
 }
 
 function renewSensorDeploymentProblem() {
+    var myNode = document.getElementById("sensorPanelPlace");
+    while (myNode.firstChild) {
+        myNode.removeChild(myNode.firstChild);
+    }
     createSensorDeploymentProblem();
-    sPanel.setSensorDeploymentProblem(prob);
+    sPanel = new SensorPanel(prob);
+    sPanel.start();
 }
 
 function createSensorDeploymentProblem() {
