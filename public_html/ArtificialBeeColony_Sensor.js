@@ -1,6 +1,6 @@
 "use strict";
 
-importScripts('./ArtificialBeeColony.js', './SensorDeploymentProblem.js', './Solution.js');
+importScripts('./ArtificialBeeColony.js', './SensorDeploymentProblem.js');
 
 function ArtificialBeeColony_Sensor(parameters) {
     ArtificialBeeColony.call(this, parameters);
@@ -18,7 +18,7 @@ ArtificialBeeColony_Sensor.prototype.calculateObjValue = function (array) {
     return -1 * this.sensorDeploymentProblem.getCoverage();
 };
 
-ArtificialBeeColony_Sensor.prototype.createRandomSolution = function () {
+ArtificialBeeColony_Sensor.prototype.createRandomPosition = function () {
     var randPos = this.sensorDeploymentProblem.generateRandomSensorsArray();
     return randPos;
 };
@@ -66,7 +66,7 @@ onmessage = function (e) {
     var parameters = {
         "NP": e.data[0],
         "limit": e.data[1],
-        "maxNumOfFunctionEval": e.data[2],
+        "maxFEs": e.data[2],
         "upperBound": e.data[3],
         "lowerBound": e.data[4],
         "dimension": e.data[5],

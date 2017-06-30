@@ -2,7 +2,7 @@
 
 /**
  * 
- * https://en.wikipedia.org/wiki/Marsaglia_polar_method
+ * Implemented from https://en.wikipedia.org/wiki/Marsaglia_polar_method
  */
 function MarsagliaPolar() {
     this.hasSpare = false;

@@ -1,6 +1,6 @@
 "use strict";
 
-importScripts('./ParticleSwarmOptimization.js', './SensorDeploymentProblem.js', './Solution.js');
+importScripts('./ParticleSwarmOptimization.js', './SensorDeploymentProblem.js');
 
 function ParticleSwarmOptimization_Sensor(parameters) {
     ParticleSwarmOptimization.call(this, parameters);
@@ -18,11 +18,16 @@ ParticleSwarmOptimization_Sensor.prototype.calculateObjValue = function (array) 
     return -1 * this.sensorDeploymentProblem.getCoverage();
 };
 
+ParticleSwarmOptimization_Sensor.prototype.createRandomPosition = function () {
+    var randPos = this.sensorDeploymentProblem.generateRandomSensorsArray();
+    return randPos;
+};
+
 ParticleSwarmOptimization_Sensor.prototype.createInitialPopulation = function () {
     //create initial population
     var i, d, randomPos, randomVelocity = [], f_i;
-    for (i = 0; i < this.swarmSize; i++) {
-        randomPos = this.sensorDeploymentProblem.generateRandomSensorsArray();
+    for (i = 0; i < this.NP; i++) {
+        randomPos = this.createRandomPosition();
         for (d = 0; d < this.dimension; d++) {
             if (d % 2 === 0) {
                 randomVelocity[d] = Math.random() * (this.sensorDeploymentProblem.getAreaWidth());
@@ -64,11 +69,11 @@ ParticleSwarmOptimization_Sensor.prototype.fixBoundary = function (array) {
 onmessage = function (e) {
    
     var parameters = {
-        "swarmSize": e.data[0],
+        "NP": e.data[0],
         "omega": e.data[1],
         "phi_p": e.data[2],
         "phi_g": e.data[3],
-        "maxNumOfFunctionEval": e.data[4],
+        "maxFEs": e.data[4],
         "upperBound": e.data[5],
         "lowerBound": e.data[6],
         "dimension": e.data[7],

@@ -1,28 +1,24 @@
 "use strict";
 
-importScripts('./BenchmarkFunctions.js', './Solution.js');
+importScripts('./ContinuousOptimizer.js');
 
 function ParticleSwarmOptimization(parameters) {
+    ContinuousOptimizer.call(this, parameters);
     this.omega = parameters.omega;
     this.phi_p = parameters.phi_p;
     this.phi_g = parameters.phi_g;
-    this.swarmSize = parameters.swarmSize;
-    this.maxNumOfFunctionEval = parameters.maxNumOfFunctionEval;
-    this.objFunc = parameters.objFunc;
-    this.upperBound = parameters.upperBound;
-    this.lowerBound = parameters.lowerBound;
-    this.dimension = parameters.dimension;
     this.swarm = [];
-    
-    this.globalBest = null;
 }
 ;
+
+ParticleSwarmOptimization.prototype = Object.create(ContinuousOptimizer.prototype);
+ParticleSwarmOptimization.prototype.constructor = ContinuousOptimizer;
 
 ParticleSwarmOptimization.prototype.createInitialPopulation = function () {
     //create initial population
     var i, d, randomPos, randomVelocity = [], f_i;
-    for (i = 0; i < this.swarmSize; i++) {
-        randomPos = createRandomPosition(this.lowerBound, this.upperBound, this.dimension);
+    for (i = 0; i < this.NP; i++) {
+        randomPos = this.createRandomPosition(this.lowerBound, this.upperBound, this.dimension);
         for (d = 0; d < this.dimension; d++) {
             randomVelocity[d] = Math.random() * (this.upperBound - this.lowerBound);
             randomVelocity[d] *= Math.random() > 0.5 ? -1 : 1; //U(-|bup-blo|, |bup-blo|)
@@ -38,17 +34,13 @@ ParticleSwarmOptimization.prototype.createInitialPopulation = function () {
 
 };
 
-ParticleSwarmOptimization.prototype.calculateObjValue = function (array) {
-    return this.objFunc(array);
-};
-
 ParticleSwarmOptimization.prototype.solve = function () {
     var numOfFunctionEval = 0, i, d, r_p, r_g, particle;
 
     this.createInitialPopulation();
 
-    while (numOfFunctionEval + this.swarmSize <= this.maxNumOfFunctionEval) {
-        for (i = 0; i < this.swarmSize; i++) {
+    while (numOfFunctionEval + this.NP <= this.maxFEs) {
+        for (i = 0; i < this.NP; i++) {
             particle = this.swarm[i]; //get the next particle
             for (d = 0; d < this.dimension; d++) {
                 //pick random numbers
@@ -83,22 +75,9 @@ ParticleSwarmOptimization.prototype.solve = function () {
                 }
             }
         }
-        numOfFunctionEval += this.swarmSize;
+        numOfFunctionEval += this.NP;
     }
     postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
-    console.log(this.globalBest.fitness);
-};
-
-ParticleSwarmOptimization.prototype.fixBoundary = function (array) {
-    for (var i = 0; i < array.length; i++) {
-        if (array[i] > this.upperBound) {
-            array[i] = this.upperBound;
-        } else if (array[i] < this.lowerBound) {
-            array[i] = this.lowerBound;
-        }
-    }
-    
-    return array;
 };
 
 onmessage = function (e) {
@@ -145,11 +124,11 @@ onmessage = function (e) {
     }
 
     var parameters = {
-        "swarmSize": e.data[0],
+        "NP": e.data[0],
         "omega": e.data[1],
         "phi_p": e.data[2],
         "phi_g": e.data[3],
-        "maxNumOfFunctionEval": e.data[4],
+        "maxFEs": e.data[4],
         "objFunc": func,
         "upperBound": e.data[6],
         "lowerBound": e.data[7],

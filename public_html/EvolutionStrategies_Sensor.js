@@ -1,6 +1,6 @@
 "use strict";
 
-importScripts('./EvolutionStrategies.js', './SensorDeploymentProblem.js', './Solution.js');
+importScripts('./EvolutionStrategies.js', './SensorDeploymentProblem.js');
 
 function EvolutionStrategies_Sensor(parameters) {
     EvolutionStrategies.call(this, parameters);
@@ -18,7 +18,7 @@ EvolutionStrategies_Sensor.prototype.calculateObjValue = function (array) {
     return -1 * this.sensorDeploymentProblem.getCoverage();
 };
 
-EvolutionStrategies_Sensor.prototype.createRandomSolution = function(){
+EvolutionStrategies_Sensor.prototype.createRandomPosition = function(){
     return this.sensorDeploymentProblem.generateRandomSensorsArray();
 };
 
@@ -46,7 +46,7 @@ onmessage = function (e) {
         "sigma": e.data[0],
         "lambda": e.data[1],
         "tau": e.data[2],
-        "maxNumOfFunctionEval": e.data[3],
+        "maxFEs": e.data[3],
         "upperBound": e.data[4],
         "lowerBound": e.data[5],
         "dimension": e.data[6],
