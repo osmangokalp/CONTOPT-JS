@@ -1,12 +1,13 @@
 "use strict";
 
-importScripts('./ContinuousOptimizer.js');
+importScripts('./ContinuousOptimizer.js', './GaussianRNG.js');
 
 function SimulatedAnnealing(parameters) {
     ContinuousOptimizer.call(this, parameters);
     this.T = parameters.T;
     this.alpha = parameters.alpha;
     this.epsilon = parameters.epsilon;
+    this.rng = new MarsagliaPolar();
 }
 ;
 
@@ -23,9 +24,13 @@ SimulatedAnnealing.prototype.solve = function () {
     
     while (numOfFunctionEval < this.maxFEs && this.T > this.epsilon) {
         neighborPos = current.position.slice();
-        j = Math.floor((Math.random() * this.dimension)); //Pick a random dimension index R 
-        neighborPos[j] = current.position[j] + (Math.random() - 0.5);
+        
+        for (var j = 0; j < this.dimension; j++) {
+            neighborPos[j] = current.position[j] + this.rng.generateRandom(0, 1) * 6;
+        } 
+        neighborPos = this.fixBoundary(neighborPos);
         neighborFitness = this.calculateObjValue(neighborPos);
+        
         if (neighborFitness <= current.fitness) { //update current
             current.position = neighborPos.slice();
             current.fitness = neighborFitness;
