@@ -10,6 +10,7 @@
     <script src="ParticleSwarmOptimization.js"></script>
     <script src="ArtificialBeeColony.js"></script>
     <script src="DifferentialEvolution.js"></script>
+    <script src="SimulatedAnnealing.js"></script>
     <script src="BenchmarkFunctions.js"></script>
     <script src="Solution.js"></script>
     <script src="GaussianRNG.js"></script>
@@ -41,6 +42,7 @@ input {
                 <option value="DifferentialEvolution">Differential Evolution</option>
                 <option value="ParticleSwarmOptimization">Particle Swarm Optimization</option>
                 <option value="EvolutionStrategies">Evolution Strategies</option>
+                <option value="SimulatedAnnealing">Simulated Annealing</option>
             </select>
         </div>
     </td>
@@ -182,6 +184,21 @@ function solveProblem() {
                 
             };
             break;
+        case "SimulatedAnnealing":
+            var T = Number(document.getElementById("T").value);
+            var alpha = Number(document.getElementById("alpha").value);
+            var epsilon = Number(document.getElementById("epsilon").value);
+            
+            var w = new Worker("SimulatedAnnealing.js");
+            w.postMessage([T, alpha, epsilon, maxFEs, objFunc, upperBound, lowerBound, dim]);
+            w.onmessage = function (event) {
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                var num = Number(event.data[1]);
+                document.getElementById("fBest").innerHTML = num.toExponential(2);
+                document.getElementById("solBest").innerHTML = applyPrecisionToResults(event.data[2]);
+                
+            };
+            break;
     }
 }
 
@@ -306,6 +323,32 @@ function algorithmSelected() {
             input.value = "0.18";
             input.setAttribute("id", "tau");
             myNode.appendChild(document.createTextNode("tau: "));
+            myNode.appendChild(input);
+            break;
+        case "SimulatedAnnealing":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "100";
+            input.setAttribute("id", "T");
+            myNode.appendChild(document.createTextNode("Temperature: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.99";
+            input.setAttribute("id", "alpha");
+            myNode.appendChild(document.createTextNode("alpha: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.001";
+            input.setAttribute("id", "epsilon");
+            myNode.appendChild(document.createTextNode("epsilon: "));
             myNode.appendChild(input);
             break;
     }

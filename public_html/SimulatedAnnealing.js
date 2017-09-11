@@ -3,7 +3,7 @@
 importScripts('./ContinuousOptimizer.js');
 
 function SimulatedAnnealing(parameters) {
-    SimulatedAnnealing.call(this, parameters);
+    ContinuousOptimizer.call(this, parameters);
     this.T = parameters.T;
     this.alpha = parameters.alpha;
     this.epsilon = parameters.epsilon;
@@ -13,29 +13,38 @@ function SimulatedAnnealing(parameters) {
 SimulatedAnnealing.prototype = Object.create(ContinuousOptimizer.prototype);
 SimulatedAnnealing.prototype.constructor = ContinuousOptimizer;
 
-SimulatedAnnealing.prototype.createParent = function () {
-    var randomPos = this.createRandomPosition();
-    return new Solution(randomPos, this.calculateObjValue(randomPos));
-};
-
 SimulatedAnnealing.prototype.solve = function () {
-    var numOfFunctionEval = 0;
-    var current, neighbor, neighborPos;
+    var i, numOfFunctionEval = 0;
+    var current, neighborPos, neighborFitness, j;
     
-    current = this.createParent();
-    this.globalBest = new Solution(this.current.position.slice(), this.current.fitness); //set initial solution as the global best
+    var randomPos = this.createRandomPosition();
+    current = new Solution(randomPos, this.calculateObjValue(randomPos));
+    this.globalBest = new Solution(current.position.slice(), current.fitness); //set initial solution as the global best
     
-    while (numOfFunctionEval <= this.maxFEs && T > epsilon) {
-        neighborPos = 
-        if (this.current.fitness <= this.globalBest.fitness) { //update the globalBest
-            this.globalBest = new ESUncorrelatedSolution(bestPosition, bestFitness, bestSigma);
-            postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
-        } else { //accept with metropolis criterion
-            
+    while (numOfFunctionEval < this.maxFEs && this.T > this.epsilon) {
+        neighborPos = current.position.slice();
+        j = Math.floor((Math.random() * this.dimension)); //Pick a random dimension index R 
+        neighborPos[j] = current.position[j] + (Math.random() - 0.5);
+        neighborFitness = this.calculateObjValue(neighborPos);
+        if (neighborFitness <= current.fitness) { //update current
+            current.position = neighborPos.slice();
+            current.fitness = neighborFitness;
+            if (current.fitness < this.globalBest.fitness) { //update globalbest
+                this.globalBest = new Solution(current.position.slice(), current.fitness);
+                postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
+            }
+        } else { 
+            var prob = Math.random();
+            var delta = neighborFitness - current.fitness;
+            if (prob < Math.exp(-delta / this.T)) { //accept with metropolis criterion
+                current.position = neighborPos.slice();
+                current.fitness = neighborFitness;
+            } 
         }
         
-        numOfFunctionEval ++;
+        this.T *= this.alpha; //decrease temperature
         
+        numOfFunctionEval ++;
     }
     postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
 };
