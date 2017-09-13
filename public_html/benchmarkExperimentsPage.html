@@ -11,6 +11,7 @@
     <script src="ArtificialBeeColony.js"></script>
     <script src="DifferentialEvolution.js"></script>
     <script src="SimulatedAnnealing.js"></script>
+    <script src="GeneticAlgorithm.js"></script>
     <script src="BenchmarkFunctions.js"></script>
     <script src="Solution.js"></script>
     <script src="GaussianRNG.js"></script>
@@ -43,6 +44,7 @@ input {
                 <option value="ParticleSwarmOptimization">Particle Swarm Optimization</option>
                 <option value="EvolutionStrategies">Evolution Strategies</option>
                 <option value="SimulatedAnnealing">Simulated Annealing</option>
+                <option value="GeneticAlgorithm">Genetic Algorithm</option>
             </select>
         </div>
     </td>
@@ -191,6 +193,21 @@ function solveProblem() {
             
             var w = new Worker("SimulatedAnnealing.js");
             w.postMessage([T, alpha, epsilon, maxFEs, objFunc, upperBound, lowerBound, dim]);
+            w.onmessage = function (event) {
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                var num = Number(event.data[1]);
+                document.getElementById("fBest").innerHTML = num.toExponential(2);
+                document.getElementById("solBest").innerHTML = applyPrecisionToResults(event.data[2]);
+                
+            };
+            break;
+        case "GeneticAlgorithm":
+            var NP = Number(document.getElementById("NP").value);
+            var mutrate = Number(document.getElementById("mutrate").value);
+            var selection = Number(document.getElementById("selection").value);
+            
+            var w = new Worker("GeneticAlgorithm.js");
+            w.postMessage([NP, mutrate, selection, maxFEs, objFunc, upperBound, lowerBound, dim]);
             w.onmessage = function (event) {
                 document.getElementById("iterCounter").innerHTML = event.data[0];
                 var num = Number(event.data[1]);
@@ -350,6 +367,35 @@ function algorithmSelected() {
             input.setAttribute("id", "epsilon");
             myNode.appendChild(document.createTextNode("epsilon: "));
             myNode.appendChild(input);
+            break;
+        case "GeneticAlgorithm":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "40";
+            input.setAttribute("id", "NP");
+            myNode.appendChild(document.createTextNode("NP: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.2";
+            input.setAttribute("id", "mutrate");
+            myNode.appendChild(document.createTextNode("mutrate "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.5";
+            input.setAttribute("id", "selection");
+            myNode.appendChild(document.createTextNode("selection "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
             break;
     }
 }

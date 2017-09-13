@@ -2,6 +2,7 @@
 
 importScripts('./ContinuousOptimizer.js');
 
+//Adapted from: "Haupt, R. L., & Haupt, S. E. (2004). Practical genetic algorithms. John Wiley & Sons."
 function GeneticAlgorithm(parameters) {
     ContinuousOptimizer.call(this, parameters);
     this.mutrate = parameters.mutrate;
@@ -14,7 +15,7 @@ GeneticAlgorithm.prototype = Object.create(ContinuousOptimizer.prototype);
 GeneticAlgorithm.prototype.constructor = ContinuousOptimizer;
 
 GeneticAlgorithm.prototype.solve = function () {
-    
+    var numOfFunctionEval = 0;
     var popsize = this.NP; //population size
     var mutrate = this.mutrate; //mutation rate
     var selection = this.selection; //fraction of population kept
@@ -24,7 +25,7 @@ GeneticAlgorithm.prototype.solve = function () {
     var M = Math.ceil( (popsize - keep) / 2); //number of matings
 
     this.createInitialPopulation();
-    this.quicksortSolutions(0, this.solutions.length - 1);
+    this.quicksortSolutions(0, popsize - 1);
     
     var sum = keep * (keep + 1) / 2; //sum of ranks
     var prob = [];
@@ -38,7 +39,7 @@ GeneticAlgorithm.prototype.solve = function () {
         odds[i] = odds[i-1] + prob[i-1];
     }
 
-    while (numOfFunctionEval + this.NP <= this.maxFEs) {
+    while (numOfFunctionEval < this.maxFEs) {
         M = Math.ceil( (popsize - keep) / 2);
         
         //find pairs
@@ -59,16 +60,84 @@ GeneticAlgorithm.prototype.solve = function () {
         }
         
         //mate using single point crossover
+        var ix = []; //index of mate#1
+        for (var i = 0; i < keep; i+=2) {
+            ix[i/2] = i;
+        }
         
+        var xp = []; //crossover point
+        for (var i = 0; i < M; i++) {
+            xp[i] = Math.floor(Math.random() * Nt);
+        }
+        
+        var r = []; //mixing parameter
+        for (var i = 0; i < M; i++) {
+            r[i] = Math.random();
+        }
+        
+        for (ic = 0; ic < M; ic++) {
+            console.log("----------------");
+            console.log("ic" + ic);
+            console.log("ma[ic]" + ma[ic]);
+            console.log("pa[ic]" + pa[ic]);
+            console.log("xp[ic]" + xp[ic]);
+            var xy = this.solutions[ma[ic]].position[xp[ic]] - this.solutions[pa[ic]].position[xp[ic]]; //ma and pa mate
+            this.solutions[keep + ix[ic]].position = this.solutions[ma[ic]].position.slice(); //1st offspring
+            this.solutions[keep + ix[ic] + 1].position = this.solutions[pa[ic]].position.slice(); //2nd offspring
+            this.solutions[keep + ix[ic]].position[xp[ic]] = this.solutions[pa[ic]].position[xp[ic]] - r[ic] * xy; //1st
+            this.solutions[keep + ix[ic] + 1].position[xp[ic]] = this.solutions[pa[ic]].position[xp[ic]] + r[ic] * xy; //2nd
+            
+            if(xp[ic] < Nt) { //crossover when last variable not selected
+                for (var i = xp[ic] + 1; i < Nt; i++) {
+                    this.solutions[keep + ix[ic]].position[i] = this.solutions[keep + ix[ic] + 1].position[i];
+                    this.solutions[keep + ix[ic] + 1].position[i] = this.solutions[keep + ix[ic]].position[i];
+                }
+            }
+        }
+        
+        //mutate the population
+        for (var i = 0; i < nmut; i++) {
+            this.solutions[Math.floor(Math.random() * popsize)].position[Math.floor(Math.random() * Nt)] = this.lowerBound + Math.random() * (this.upperBound - this.lowerBound);
+        }
+        
+        // The new offspring and mutated chromosomes are evaluated
+        for (var i = keep; i < popsize; i++) {
+            this.solutions[i].fitness = this.calculateObjValue(this.solutions[i].position);
+            numOfFunctionEval++;
+        }
+        
+        //Sort the population
+        this.quicksortSolutions(0, popsize - 1);
+        if (this.solutions[0].fitness < this.globalBest.fitness) {
+            this.globalBest.position = this.solutions[0].position.slice();
+            this.globalBest.fitness = this.solutions[0].fitness;
+            postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
+        }
     }
+    postMessage([numOfFunctionEval, this.globalBest.fitness, this.globalBest.position]);
+};
+
+GeneticAlgorithm.prototype.createInitialPopulation = function () {
+    var i, min = Number.MAX_VALUE, minIndex = 0;;
+    //initialization step
+    for (var i = 0; i < this.NP; i++) {
+        var randPos = this.createRandomPosition(this.lowerBound, this.upperBound, this.dimension);
+        var randF = this.calculateObjValue(randPos);
+        this.solutions[i] = new Solution(randPos, randF); //create random solution
+
+        if (randF < min) {
+            min = randF;
+            minIndex = i;
+        }
+    }
+    this.globalBest = new Solution(this.solutions[minIndex].position.slice(0), min);
 };
 
 //modified from: http://www.vogella.com/tutorials/JavaAlgorithmsQuicksort/article.html#quicksort
 GeneticAlgorithm.prototype.quicksortSolutions = function (low, high) {
-
     var i = low, j = high;
     // Get the pivot element from the middle of the list
-    var pivot = this.solutions[low + (high - low) / 2].fitness;
+    var pivot = this.solutions[Math.floor(low + (high - low) / 2)].fitness;
 
     // Divide into two lists
     while (i <= j) {
@@ -107,4 +176,62 @@ GeneticAlgorithm.prototype.quicksortExchange = function (i, j) {
     var temp = this.solutions[i];
     this.solutions[i] = this.solutions[j];
     this.solutions[j] = temp;
+};
+
+onmessage = function (e) {
+    var func;
+    switch (e.data[4]) {
+        case "sphere":
+            func = sphere;
+            break;
+        case "schwefel2_22":
+            func = schwefel2_22;
+            break;
+        case "schwefel1_2":
+            func = schwefel1_2;
+            break;
+        case "schwefel2_21":
+            func = schwefel2_21;
+            break;
+        case "rosenbrock":
+            func = rosenbrock;
+            break;
+        case "step":
+            func = step;
+            break;
+        case "quarticWithNoise":
+            func = quarticWithNoise;
+            break;
+        case "schwefel2_26":
+            func = schwefel2_26;
+            break;
+        case "rastrigin":
+            func = rastrigin;
+            break;
+        case "ackley":
+            func = ackley;
+            break;
+        case "griewank":
+            func = griewank;
+            break;
+        case "penalized":
+            func = penalized;
+            break;
+        default:
+            func = null;
+    }
+
+    var parameters = {
+        "NP": e.data[0],
+        "mutrate": e.data[1],
+        "selection": e.data[2],
+        "maxFEs": e.data[3],
+        "objFunc": func,
+        "upperBound": e.data[5],
+        "lowerBound": e.data[6],
+        "dimension": e.data[7]
+    };
+
+    var ga = new GeneticAlgorithm(parameters);
+    ga.solve();
 };
