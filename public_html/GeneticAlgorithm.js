@@ -16,11 +16,17 @@ GeneticAlgorithm.prototype.constructor = ContinuousOptimizer;
 
 GeneticAlgorithm.prototype.solve = function () {
     var numOfFunctionEval = 0;
+    if(this.NP % 2 != 0) {
+        this.NP ++;
+    }
     var popsize = this.NP; //population size
     var mutrate = this.mutrate; //mutation rate
     var selection = this.selection; //fraction of population kept
     var Nt = this.dimension; //#variables
-    var keep = Math.floor(selection * this.NP); //#population members that survive
+    var keep = Math.floor(selection * popsize); //#population members that survive
+    if (keep % 2 != 0) {
+        keep ++;
+    }
     var nmut = Math.ceil((popsize - 1) * Nt * mutrate); //total number of mutations
     var M = Math.ceil( (popsize - keep) / 2); //number of matings
 
@@ -40,15 +46,14 @@ GeneticAlgorithm.prototype.solve = function () {
     }
 
     while (numOfFunctionEval < this.maxFEs) {
-        M = Math.ceil( (popsize - keep) / 2);
-        
+                
         //find pairs
         var ma = [], pa = [];
         var ic = 0;
         while (ic < M) {
             var pick1 = Math.random();
             var pick2 = Math.random();
-            for (var id = 1; id < keep; id++) {
+            for (var id = 1; id <= keep; id++) {
                 if (pick1 <= odds[id] && pick1 > odds[id - 1] ) {
                     ma[ic] = id-1;
                 }
@@ -56,13 +61,14 @@ GeneticAlgorithm.prototype.solve = function () {
                     pa[ic] = id-1;
                 }
             }
+
             ic++;
         }
         
         //mate using single point crossover
         var ix = []; //index of mate#1
-        for (var i = 0; i < keep; i+=2) {
-            ix[i/2] = i;
+        for (var i = 0; i < M; i++) {
+            ix[i] = 2*i;
         }
         
         var xp = []; //crossover point
@@ -76,18 +82,13 @@ GeneticAlgorithm.prototype.solve = function () {
         }
         
         for (ic = 0; ic < M; ic++) {
-            console.log("----------------");
-            console.log("ic" + ic);
-            console.log("ma[ic]" + ma[ic]);
-            console.log("pa[ic]" + pa[ic]);
-            console.log("xp[ic]" + xp[ic]);
             var xy = this.solutions[ma[ic]].position[xp[ic]] - this.solutions[pa[ic]].position[xp[ic]]; //ma and pa mate
             this.solutions[keep + ix[ic]].position = this.solutions[ma[ic]].position.slice(); //1st offspring
             this.solutions[keep + ix[ic] + 1].position = this.solutions[pa[ic]].position.slice(); //2nd offspring
             this.solutions[keep + ix[ic]].position[xp[ic]] = this.solutions[pa[ic]].position[xp[ic]] - r[ic] * xy; //1st
             this.solutions[keep + ix[ic] + 1].position[xp[ic]] = this.solutions[pa[ic]].position[xp[ic]] + r[ic] * xy; //2nd
             
-            if(xp[ic] < Nt) { //crossover when last variable not selected
+            if(xp[ic] < Nt - 1) { //crossover when last variable not selected
                 for (var i = xp[ic] + 1; i < Nt; i++) {
                     this.solutions[keep + ix[ic]].position[i] = this.solutions[keep + ix[ic] + 1].position[i];
                     this.solutions[keep + ix[ic] + 1].position[i] = this.solutions[keep + ix[ic]].position[i];
