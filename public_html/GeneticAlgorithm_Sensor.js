@@ -1,31 +1,31 @@
 "use strict";
 
-importScripts('./DifferentialEvolution.js', './SensorDeploymentProblem.js');
+importScripts('./GeneticAlgorithm.js', './SensorDeploymentProblem.js');
 
-function DifferentialEvolution_Sensor(parameters) {
-    DifferentialEvolution.call(this, parameters);
+function GeneticAlgorithm_Sensor(parameters) {
+    GeneticAlgorithm.call(this, parameters);
     this.sensorDeploymentProblem = new SensorDeploymentProblem(parameters.numOfSensors, parameters.numOfPoints,
             parameters.radius, parameters.width, parameters.height);
     this.sensorDeploymentProblem.setPointsArray(parameters.initialPointsArray);
 }
 ;
 
-DifferentialEvolution_Sensor.prototype = Object.create(DifferentialEvolution.prototype);
-DifferentialEvolution_Sensor.prototype.constructor = DifferentialEvolution;
+GeneticAlgorithm_Sensor.prototype = Object.create(GeneticAlgorithm.prototype);
+GeneticAlgorithm_Sensor.prototype.constructor = GeneticAlgorithm;
 
-DifferentialEvolution_Sensor.prototype.calculateObjValue = function (array) {
+GeneticAlgorithm_Sensor.prototype.calculateObjValue = function (array) {
     this.sensorDeploymentProblem.setSensorsArray(array);
     return -1 * this.sensorDeploymentProblem.getCoverage();
 };
 
-DifferentialEvolution_Sensor.prototype.createRandomPosition = function () {
+GeneticAlgorithm_Sensor.prototype.createRandomPosition = function () {
     var randPos = this.sensorDeploymentProblem.generateRandomSensorsArray();
     return randPos;
 };
 
-DifferentialEvolution_Sensor.prototype.createInitialPopulation = function () {
+GeneticAlgorithm_Sensor.prototype.createInitialPopulation = function () {
     var i, min = Number.MAX_VALUE, minIndex = 0;
-    
+
     //initialization step
     for (var i = 0; i < this.NP; i++) {
         var randPos = this.sensorDeploymentProblem.generateRandomSensorsArray();
@@ -40,7 +40,7 @@ DifferentialEvolution_Sensor.prototype.createInitialPopulation = function () {
     this.globalBest = new Solution(this.solutions[minIndex].position.slice(0), min);
 };
 
-DifferentialEvolution_Sensor.prototype.fixBoundary = function (array) {
+GeneticAlgorithm_Sensor.prototype.fixBoundary = function (array) {
     for (var i = 0; i < this.sensorDeploymentProblem.getNumOfSensors(); i++) {
         if (array[2 * i] > this.sensorDeploymentProblem.getAreaWidth()) {
             array[2 * i] = this.sensorDeploymentProblem.getAreaWidth();
@@ -62,8 +62,8 @@ onmessage = function (e) {
 
     var parameters = {
         "NP": e.data[0],
-        "CR": e.data[1],
-        "F": e.data[2],
+        "mutrate": e.data[1],
+        "selection": e.data[2],
         "maxFEs": e.data[3],
         "upperBound": e.data[4],
         "lowerBound": e.data[5],
@@ -76,6 +76,6 @@ onmessage = function (e) {
         "initialPointsArray": e.data[12]
     };
 
-    var de_s = new DifferentialEvolution_Sensor(parameters);
-    de_s.solve();
+    var ga_s = new GeneticAlgorithm_Sensor(parameters);
+    ga_s.solve();
 };

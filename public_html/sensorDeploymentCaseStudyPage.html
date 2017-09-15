@@ -11,6 +11,7 @@
     <script src="ArtificialBeeColony.js"></script>
     <script src="DifferentialEvolution.js"></script>
     <script src="SimulatedAnnealing.js"></script>
+    <script src="GeneticAlgorithm.js"></script>
     <script src="BenchmarkFunctions.js"></script>
     <script src="Solution.js"></script>
     <script src="GaussianRNG.js"></script>
@@ -21,6 +22,7 @@
     <script src="ParticleSwarmOptimization_Sensor.js"></script>
     <script src="EvolutionStrategies_Sensor.js"></script>
     <script src="SimulatedAnnealing_Sensor.js"></script>
+    <script src="GeneticAlgorithm_Sensor.js"></script>
     
     <style>
 table {
@@ -68,6 +70,7 @@ input {
                                     <option value="ParticleSwarmOptimization">Particle Swarm Optimization</option>
                                     <option value="EvolutionStrategies">Evolution Strategies</option>
                                     <option value="SimulatedAnnealing">Simulated Annealing</option>
+                                    <option value="GeneticAlgorithm">Genetic Algorithm</option>
                                 </select>
                                 <div id="algorithmParameters">
     
@@ -251,6 +254,23 @@ function solveProblem() {
                 document.getElementById("solBest").innerHTML = parseSensorArray(event.data[2]);
             };
             break;
+            
+        case "GeneticAlgorithm":
+            var NP = Number(document.getElementById("NP").value);
+            var mutrate = Number(document.getElementById("mutrate").value);
+            var selection = Number(document.getElementById("selection").value);
+            
+            w = new Worker("GeneticAlgorithm_Sensor.js");
+            w.postMessage([NP, mutrate, selection, maxFEs, 0, 0, numOfSensors*2, numOfSensors, numOfPoints, radius, width, height, prob.getPointsArray()]);
+         
+            w.onmessage = function (event) {
+                prob.setSensorsArray(event.data[2]);
+                sPanel.repaint();
+                document.getElementById("iterCounter").innerHTML = event.data[0];
+                document.getElementById("fBest").innerHTML = -1.0 * event.data[1];
+                document.getElementById("solBest").innerHTML = parseSensorArray(event.data[2]);
+            };
+            break;
     }
 }
 
@@ -391,6 +411,33 @@ function algorithmSelected() {
             input.value = "0.001";
             input.setAttribute("id", "epsilon");
             myNode.appendChild(document.createTextNode("epsilon: "));
+            myNode.appendChild(input);
+            break;
+            
+        case "GeneticAlgorithm":
+            var input = document.createElement("input");
+            input.type = "text";
+            input.value = "40";
+            input.setAttribute("id", "NP");
+            myNode.appendChild(document.createTextNode("NP: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.005";
+            input.setAttribute("id", "mutrate");
+            myNode.appendChild(document.createTextNode("mutrate: "));
+            myNode.appendChild(input);
+            
+            myNode.appendChild(document.createElement("br"));
+            
+            input = document.createElement("input");
+            input.type = "text";
+            input.value = "0.5";
+            input.setAttribute("id", "selection");
+            myNode.appendChild(document.createTextNode("selection: "));
             myNode.appendChild(input);
             break;
     }
