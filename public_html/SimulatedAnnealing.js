@@ -14,12 +14,16 @@ function SimulatedAnnealing(parameters) {
 SimulatedAnnealing.prototype = Object.create(ContinuousOptimizer.prototype);
 SimulatedAnnealing.prototype.constructor = ContinuousOptimizer;
 
+SimulatedAnnealing.prototype.createInitialSolution = function() {
+    var randomPos = this.createRandomPosition();
+    return new Solution(randomPos, this.calculateObjValue(randomPos));
+};
+
 SimulatedAnnealing.prototype.solve = function () {
     var i, numOfFunctionEval = 0;
     var current, neighborPos, neighborFitness, j;
     
-    var randomPos = this.createRandomPosition();
-    current = new Solution(randomPos, this.calculateObjValue(randomPos));
+    current = this.createInitialSolution();
     this.globalBest = new Solution(current.position.slice(), current.fitness); //set initial solution as the global best
     
     while (numOfFunctionEval < this.maxFEs && this.T > this.epsilon) {
