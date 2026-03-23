@@ -12,4 +12,4 @@ This source code belongs to the following paper:
 
 Gökalp, O., Bodur, S., & Uğur, A. (2019). CONTOPT-JS: Sürekli Eniyileme Problemleri için Metasezgisel Algoritmalar tabanlı bir JavaScript Yazılım Kütüphanesi. Akıllı Sistemler ve Uygulamaları Dergisi, 2(1), 1-7.
 
-Paper link: https://www.researchgate.net/publication/330600711_CONTOPT-JS_Surekli_Eniyileme_Problemleri_icin_Metasezgisel_Algoritmalar_tabanli_bir_JavaScript_Yazilim_Kutuphanesi
+Paper link: https://doi.org/10.54856/jiswa.201905050
